@@ -1,0 +1,15 @@
+version: '3.5'
+networks:
+  exam-network:
+    driver: bridge
+services:
+  python:
+    build:
+      context: ./
+    container_name: exam
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@pg:5432/test_db
+    ports:
+      - "8080:8080"
+    networks:
+      - exam-network
