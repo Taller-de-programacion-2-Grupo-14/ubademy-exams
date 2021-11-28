@@ -1,0 +1,359 @@
+openapi: "3.0.0"
+servers:
+  - url: 'https://ubademy-14-prod.herokuapp.com/'
+info:
+  description: Exams API encargada de todas las operaciones relacionadas a examenes
+  version: 0.2.0
+  title: Exams
+
+tags:
+  - name: Exam
+    description: Operaciones sobre examenes
+
+paths:
+  '/exams/create':
+    'post':
+      tags:
+        - Exam
+      description: Crea un examen nuevo
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido del usuario que desea crear el examen
+      requestBody:
+        description: body para la creacion del examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examCreate'
+      responses:
+        '200':
+          description: Examen creado correctamente
+        '40x':
+          description: La pregunta o el título no pueden estar vacíos
+        '40x':
+          description: Pregunta o titulo inválido
+
+  '/exams':
+    'get':
+      tags:
+        - Exam
+      description: Obtengo una lista con todos los examenes del curso que no están corregidos
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      requestBody:
+        description: Body para listar los examenes
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examsToCorrect'
+
+      responses:
+        '200':
+          description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/infoExamsToCorrect'
+        '204':
+          description: No content
+        '400':
+          description: Bad Request
+  
+  '/exams/correct/{exam_id}':
+    'get':
+      tags:
+        - Exam
+      description: Obtengo detalle de un examen sin corregir para corregirlo
+      parameters:
+        - in: path
+          name: exam_id
+          description: id del examen
+          required: true
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      requestBody:
+        description: Body para mostrar las respuestas del examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examToCorrect'
+
+      responses:
+        '200':
+          description: Todo okay
+        '204':
+          description: No content
+        '400':
+          description: Bad Request
+
+    'patch':
+      tags:
+        - Exam
+      description: Envio correcciones de un examen
+      parameters:
+        - in: path
+          name: exam_id
+          description: id del examen
+          required: true
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      requestBody:
+        description: Body para corregir el examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/infoExamToCorrect'
+
+      responses:
+        '200':
+          description: Todo okay
+        '204':
+          description: No content
+        '40x':
+          description: Campo/s inválido/s
+        '400':
+          description: Bad Request
+
+  '/exams/{course_id}/view':
+    'get':
+      tags:
+        - Exam
+      description: Obtiene la lista de los examenes que el alumno tiene para realizar
+      parameters:
+        - in: path
+          name: course_id
+          description: id del curso
+          required: true
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      responses:
+        '200':
+          description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/toDoExamsInfo'
+        '204':
+          description: No content
+        '404':
+          description: Curso no existe
+        '400':
+          description: Bad Request
+
+    '/exams/{course_id}/complete/{exam_id}':
+      'get':
+      tags:
+        - Exam
+      description: Obtiene la información del examen indicado por el id, para ser completado por el alumno
+      parameters:
+        - in: path
+          name: course_id
+          description: id del curso
+          required: true
+        - in: path
+          name: exam_id
+          description: id del examen
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      responses:
+        '200':
+          description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/toDoExamInfo'
+        '204':
+          description: No content
+        '400':
+          description: Bad Request
+        '404':
+          description: Curso no existe
+
+      'post':
+      tags:
+        - Exam
+      description: Completo un examen
+      parameters:
+        - in: path
+          name: course_id
+          description: id del curso
+          required: true
+        - in: path
+          name: exam_id
+          description: id del examen
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      responses:
+        '200':
+          description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/examCompletionInfo'
+        '400':
+          description: Bad Request
+        '404':
+          description: Curso no existe
+        '40x':
+          description: Campo/s inválido/s
+
+components:
+  schemas:
+    examCreate:
+      type: object
+      required:
+        - id_course
+        - name
+        - questions
+      properties:
+        id_course:
+          type: integer
+          example: 8
+        name:
+          type: string
+          example: 'Examen piloto sobre conocimientos de python3'
+        questions:
+          type: array
+          description: Un array con las preguntas que va a tener el examen
+          example: ['¿Existe la expresión 'i++' en python?', 'Nombre alguna funcionalidad que este en Python3 y no en Python 2.7']
+
+    infoExamsToCorrect:
+      type: object
+      properties:
+        id_student:
+          type: integer
+          example: 5
+        questions:
+          type: array
+          description: Un array con las preguntas que tiene el examen 
+          example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
+        id_questions:
+          type: array
+          description: array con el id de las preguntas que estan en el array preguntas, el id es del estilo q{question_id}e{exam_id}
+          example: ["q1e3", "q2e3"]
+        answers:
+          type: array
+          description: Un array con las respuestas del alumno
+          example: ['Colón', '4']
+
+    examsToCorrect:
+      type: object
+      properties:
+        id_course:
+          type: integer
+          example: 8
+
+    examToCorrect:
+      type: object
+      properties:
+        id_course:
+          type: integer
+          example: 8
+        id_exam:
+          type: integer
+          example: 8
+        id_user:
+          type: integer
+          example: 8
+  
+    infoExamToCorrect:
+      type: object
+      properties:
+        id_course:
+          type: integer
+          example: 8
+        id_exam:
+          type: integer
+          example: 8
+        id_user:
+          type: integer
+          example: 8
+        id_questions:
+          type: array
+          description: un array con el id de las preguntas
+          example: ["q1e3", "q2e3"]
+        corrections:
+          type: array  
+          description: un array con las correcciones realizadas por el corrector, con el orden correspondido con el de id_questions
+          example: ["MAL: La respuesta contiene errores conceptuales graves", "Bien, respuesta correcta pero podría haber sido algo más larga"]
+        status:
+          type: string
+          description: estado del examen. Opciones: aprobado/desaprobado
+          example: desaprobado   
+
+    toDoExamsInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Primer examen del curso de jardineria'
+        id_exam:
+          type: integer
+          example: 1
+        questions: 
+          type: array
+          description: Un array con las preguntas del examen
+          example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
+        questions_id:
+          type: array
+          description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
+          example: ["q1e1", "q2e1"]
+    
+    toDoExamInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Primer examen del curso de jardineria'
+        id_exam:
+          type: integer
+          example: 1
+        questions: 
+          type: array
+          description: Un array con las preguntas del examen
+          example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
+        questions_id:
+          type: array
+          description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
+          example: ["q1e1", "q2e1"]
+    
+    examCompletionInfo:
+      type: object
+      properties:
+        id_exam:
+          type: integer
+          example: 1
+        id_student:
+          type: integer
+          example: 3
+        questions: 
+          type: array
+          description: Un array con las preguntas del examen
+          example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
+        questions_id:
+          type: array
+          description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
+          example: ["q1e1", "q2e1"]
+        answers:
+          type: array
+          description: un array con las respuestas del alumno, también manteniendo el orden
+          example: ["Algo verde que crece en el jardin", "No me acuerdo de ninguno"]
