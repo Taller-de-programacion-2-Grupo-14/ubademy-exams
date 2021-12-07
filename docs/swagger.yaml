@@ -12,7 +12,7 @@ tags:
 
 paths:
   '/exams/create':
-    'post':
+    'patch':
       tags:
         - Exam
       description: Crea un examen nuevo
@@ -31,28 +31,25 @@ paths:
       responses:
         '200':
           description: Examen creado correctamente
-        '40x':
+        '400':
           description: La pregunta o el título no pueden estar vacíos
-        '40x':
+        '403':
           description: Pregunta o titulo inválido
 
-  '/exams':
+  '/exams/{course_id}':
     'get':
       tags:
         - Exam
       description: Obtengo una lista con todos los examenes del curso que no están corregidos
       parameters:
+        - in: path
+          name: course_id
+          description: id del curso
+          example: 5
         - in: header
           name: x-access-token
           required: true
           description: token recibido de usuario
-      requestBody:
-        description: Body para listar los examenes
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/examsToCorrect'
 
       responses:
         '200':
@@ -76,21 +73,27 @@ paths:
           name: exam_id
           description: id del examen
           required: true
+        - in: query
+          name: id_course
+          example: 8
+        - in: query
+          name: id_exam
+          example: 7
+        - in: query
+          name: id_user
+          example: 5
         - in: header
           name: x-access-token
           required: true
           description: token recibido de usuario
-      requestBody:
-        description: Body para mostrar las respuestas del examen
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/examToCorrect'
 
       responses:
         '200':
           description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/infoExamToCorrect'
         '204':
           description: No content
         '400':
@@ -115,7 +118,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/infoExamToCorrect'
+              $ref: '#/components/schemas/infoExamCorrected'
 
       responses:
         '200':
@@ -127,7 +130,7 @@ paths:
         '400':
           description: Bad Request
 
-  '/exams/{course_id}/view':
+  '/exams/view/{course_id}':
     'get':
       tags:
         - Exam
@@ -155,16 +158,12 @@ paths:
         '400':
           description: Bad Request
 
-    '/exams/{course_id}/complete/{exam_id}':
-      'get':
+  '/exams/complete/{exam_id}':
+    'get':
       tags:
         - Exam
       description: Obtiene la información del examen indicado por el id, para ser completado por el alumno
       parameters:
-        - in: path
-          name: course_id
-          description: id del curso
-          required: true
         - in: path
           name: exam_id
           description: id del examen
@@ -186,15 +185,11 @@ paths:
         '404':
           description: Curso no existe
 
-      'post':
+    'post':
       tags:
         - Exam
       description: Completo un examen
       parameters:
-        - in: path
-          name: course_id
-          description: id del curso
-          required: true
         - in: path
           name: exam_id
           description: id del examen
@@ -233,8 +228,10 @@ components:
           example: 'Examen piloto sobre conocimientos de python3'
         questions:
           type: array
+          items:
+            type: string
           description: Un array con las preguntas que va a tener el examen
-          example: ['¿Existe la expresión 'i++' en python?', 'Nombre alguna funcionalidad que este en Python3 y no en Python 2.7']
+          example: ['¿Existe la expresión i++ en python?', 'Nombre alguna funcionalidad que este en Python3 y no en Python 2.7']
 
     infoExamsToCorrect:
       type: object
@@ -244,27 +241,26 @@ components:
           example: 5
         questions:
           type: array
+          items:
+            type: string
           description: Un array con las preguntas que tiene el examen 
           example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
         id_questions:
           type: array
+          items:
+            type: string
           description: array con el id de las preguntas que estan en el array preguntas, el id es del estilo q{question_id}e{exam_id}
           example: ["q1e3", "q2e3"]
         answers:
           type: array
+          items:
+            type: string
           description: Un array con las respuestas del alumno
           example: ['Colón', '4']
-
-    examsToCorrect:
-      type: object
-      properties:
-        id_course:
-          type: integer
-          example: 8
-
-    examToCorrect:
-      type: object
-      properties:
+  
+    infoExamToCorrect:
+        type: object
+        properties:
         id_course:
           type: integer
           example: 8
@@ -274,8 +270,30 @@ components:
         id_user:
           type: integer
           example: 8
-  
-    infoExamToCorrect:
+        id_questions:
+          type: array
+          items:
+            type: string
+          description: un array con el id de las preguntas
+          example: ["q1e3", "q2e3"]
+        questions:
+          type: array
+          items:
+            type: string
+          description: un arrat con las preguntas del examen con el orden correspondido con el de id_questions
+          example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
+        corrections:
+          type: array
+          items:
+            type: string  
+          description: un array con las respuestas realizadas por el alumno, con el orden correspondido con el de id_questions
+          example: ["Carlos Saul Menem", "85"]
+        status:
+          type: string
+          description: estado del examen, las opciones son aprobado o desaprobado
+          example: desaprobado   
+
+    infoExamCorrected:
       type: object
       properties:
         id_course:
@@ -289,15 +307,19 @@ components:
           example: 8
         id_questions:
           type: array
+          items:
+            type: string
           description: un array con el id de las preguntas
           example: ["q1e3", "q2e3"]
         corrections:
-          type: array  
+          type: array
+          items:
+            type: string  
           description: un array con las correcciones realizadas por el corrector, con el orden correspondido con el de id_questions
           example: ["MAL: La respuesta contiene errores conceptuales graves", "Bien, respuesta correcta pero podría haber sido algo más larga"]
         status:
           type: string
-          description: estado del examen. Opciones: aprobado/desaprobado
+          description: estado del examen, las opciones son aprobado o desaprobado
           example: desaprobado   
 
     toDoExamsInfo:
@@ -311,10 +333,14 @@ components:
           example: 1
         questions: 
           type: array
+          items:
+            type: string
           description: Un array con las preguntas del examen
           example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
         questions_id:
           type: array
+          items:
+            type: string
           description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
           example: ["q1e1", "q2e1"]
     
@@ -329,10 +355,14 @@ components:
           example: 1
         questions: 
           type: array
+          items:
+            type: string
           description: Un array con las preguntas del examen
           example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
         questions_id:
           type: array
+          items:
+            type: string
           description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
           example: ["q1e1", "q2e1"]
     
@@ -347,13 +377,19 @@ components:
           example: 3
         questions: 
           type: array
+          items:
+            type: string
           description: Un array con las preguntas del examen
           example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
         questions_id:
           type: array
+          items:
+            type: string
           description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
           example: ["q1e1", "q2e1"]
         answers:
           type: array
+          items:
+            type: string
           description: un array con las respuestas del alumno, también manteniendo el orden
           example: ["Algo verde que crece en el jardin", "No me acuerdo de ninguno"]
