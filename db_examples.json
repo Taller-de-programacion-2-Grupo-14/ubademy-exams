@@ -1,0 +1,40 @@
+{
+    "exams":
+        {
+            "exam_1_item": {"title": "Un examen piloto sobre python", 
+                            "questions": ["Python es un lenguaje tipado?", 
+                                          "Mencione un caso en el que no usaria Python", 
+                                          "Mencione al menos dos funcionalidades presentes en Python3 y no en Python2.7"],
+                            "status": "published"},
+
+            "exam_2_item": {"title": "Examen de Jardineria 101", 
+                            "questions": ["Describa al menos tres practicas de jardineria aprendidas a lo largo del curso", 
+                                          "Como se sabe cuando una planta debe ser regada?", 
+                                          "Mencione al menos tres tipos de tierra y sus beneficios"],
+                            "status": "draft"}
+        },
+    "answers":
+        {
+            "exam_1":[
+
+                    {"id_student": 8, 
+                    "answers": ["no", 
+                                "Para hacer alguna aplicación d emuy bajo nivel donde use sockets",
+                                "fucniones de ordenamiento"],
+                    "corrections": "En el tercer ejercicio se podria haber desarrollado un poco más",
+                    "status": "passed"
+                    },
+                    {"id_student": 5,
+                    "answers": ["No", 
+                                "No puedo pensar en ninguno, aguante Python!",
+                                "Ninguna"],
+                    "corrections": "",
+                    "status": "not corrected"}
+            ]
+        },
+    "exam_courses":
+        {
+            "course_5_exams": [1],
+            "course_20_exams": [2]
+        }
+}
