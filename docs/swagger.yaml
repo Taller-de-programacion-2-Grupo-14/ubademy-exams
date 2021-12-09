@@ -63,7 +63,7 @@ paths:
         '400':
           description: Bad Request
   
-  '/exams/correct/{exam_id}':
+  '/exams/correct/{exam_id}/{student_id}':
     'get':
       tags:
         - Exam
@@ -73,15 +73,6 @@ paths:
           name: exam_id
           description: id del examen
           required: true
-        - in: query
-          name: id_course
-          example: 8
-        - in: query
-          name: id_exam
-          example: 7
-        - in: query
-          name: id_user
-          example: 5
         - in: header
           name: x-access-token
           required: true
@@ -98,7 +89,7 @@ paths:
           description: No content
         '400':
           description: Bad Request
-
+  '/exams/correct/{exam_id}':
     'patch':
       tags:
         - Exam
@@ -197,13 +188,16 @@ paths:
           name: x-access-token
           required: true
           description: token recibido de usuario
+      requestBody:
+        description: Body para completar el examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examCompletionInfo'
       responses:
         '200':
           description: Todo okay
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/examCompletionInfo'
         '400':
           description: Bad Request
         '404':
@@ -236,6 +230,9 @@ components:
     infoExamsToCorrect:
       type: object
       properties:
+        exam_name:
+          type: string
+          example: 'Examen de conocimiento general'
         id_student:
           type: integer
           example: 5
@@ -259,15 +256,15 @@ components:
           example: ['Colón', '4']
   
     infoExamToCorrect:
-        type: object
-        properties:
+      type: object
+      properties:
         id_course:
           type: integer
           example: 8
         id_exam:
           type: integer
           example: 8
-        id_user:
+        id_student:
           type: integer
           example: 8
         id_questions:
@@ -280,9 +277,9 @@ components:
           type: array
           items:
             type: string
-          description: un arrat con las preguntas del examen con el orden correspondido con el de id_questions
+          description: un array con las preguntas del examen con el orden correspondido con el de id_questions
           example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
-        corrections:
+        answers:
           type: array
           items:
             type: string  
@@ -290,8 +287,8 @@ components:
           example: ["Carlos Saul Menem", "85"]
         status:
           type: string
-          description: estado del examen, las opciones son aprobado o desaprobado
-          example: desaprobado   
+          description: estado del examen, not corrected
+          example: not corrected   
 
     infoExamCorrected:
       type: object
@@ -302,7 +299,7 @@ components:
         id_exam:
           type: integer
           example: 8
-        id_user:
+        id_student:
           type: integer
           example: 8
         id_questions:
@@ -312,15 +309,13 @@ components:
           description: un array con el id de las preguntas
           example: ["q1e3", "q2e3"]
         corrections:
-          type: array
-          items:
-            type: string  
-          description: un array con las correcciones realizadas por el corrector, con el orden correspondido con el de id_questions
-          example: ["MAL: La respuesta contiene errores conceptuales graves", "Bien, respuesta correcta pero podría haber sido algo más larga"]
+          type: string
+          description: la correccion realizada 
+          example: 'El examen en temrinos generales, esta bastante bien, se podria haber desarrollado un poco mas en la ultima pregunta'
         status:
           type: string
-          description: estado del examen, las opciones son aprobado o desaprobado
-          example: desaprobado   
+          description: estado del examen, las opciones son failed o passed
+          example: 'failed'   
 
     toDoExamsInfo:
       type: object
@@ -331,18 +326,16 @@ components:
         id_exam:
           type: integer
           example: 1
+        id_course:
+          type: integer
+          description: id del curso
+          example: 5
         questions: 
           type: array
           items:
             type: string
           description: Un array con las preguntas del examen
           example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
-        questions_id:
-          type: array
-          items:
-            type: string
-          description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
-          example: ["q1e1", "q2e1"]
     
     toDoExamInfo:
       type: object
@@ -359,12 +352,6 @@ components:
             type: string
           description: Un array con las preguntas del examen
           example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
-        questions_id:
-          type: array
-          items:
-            type: string
-          description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
-          example: ["q1e1", "q2e1"]
     
     examCompletionInfo:
       type: object
@@ -381,12 +368,6 @@ components:
             type: string
           description: Un array con las preguntas del examen
           example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
-        questions_id:
-          type: array
-          items:
-            type: string
-          description: Un array que contiene los ids de las preguntas en el mismo orden que las preguntas en el otro array. Son de la forma q{question_id}e{exam_id}
-          example: ["q1e1", "q2e1"]
         answers:
           type: array
           items:
