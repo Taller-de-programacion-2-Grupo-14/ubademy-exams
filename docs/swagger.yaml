@@ -12,7 +12,7 @@ tags:
 
 paths:
   '/exams/create':
-    'patch':
+    'post':
       tags:
         - Exam
       description: Crea un examen nuevo
@@ -32,17 +32,73 @@ paths:
         '200':
           description: Examen creado correctamente
         '400':
-          description: La pregunta o el título no pueden estar vacíos
+          description: La pregunta o el título no pueden estar vacíos/son inválidos
         '403':
-          description: Pregunta o titulo inválido
+          description: Invalid user action
+
+  '/exams/edit/{exam_id}':
+    'put':
+      tags:
+        - Exam
+      description: Edita un examen que aun no fue publicado
+      parameters:
+        - in: path
+          required: true
+          name: exam_id
+          description: id del examen
+          example: 5
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido del usuario que desea crear el examen
+      requestBody:
+        description: body para la edicion del examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examCreate'
+      responses:
+        '200':
+          description: Examen editado correctamente
+        '400':
+          description: Bad request
+        '403':
+          description: Invalid user action
+
+  '/exams/publish':
+    'post':
+      tags:
+        - Exam
+      description: Publica un examen que está como borrador
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido del usuario que desea publicar el examen
+      requestBody:
+        description: body para la publicacion del examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examPublish'
+      responses:
+        '200':
+          description: Examen publicado correctamente
+        '400':
+          description: Bad request
+        '403':
+          description: Invalid user action
 
   '/exams/{course_id}':
     'get':
       tags:
         - Exam
-      description: Obtengo una lista con todos los examenes del curso que no están corregidos
+      description: Obtengo una lista con todos los examenes del curso en caso de ser el creador, y todos los que no están publicados si soy alumno
       parameters:
         - in: path
+          required: true
           name: course_id
           description: id del curso
           example: 5
@@ -62,6 +118,8 @@ paths:
           description: No content
         '400':
           description: Bad Request
+        '403':
+          description: Invalid user action
   
   '/exams/correct/{exam_id}/{student_id}':
     'get':
@@ -73,6 +131,10 @@ paths:
           name: exam_id
           description: id del examen
           required: true
+        - in: path
+          required: true
+          name: student_id
+          description: id del estudiante
         - in: header
           name: x-access-token
           required: true
@@ -89,7 +151,10 @@ paths:
           description: No content
         '400':
           description: Bad Request
-  '/exams/correct/{exam_id}':
+        '403':
+          description: Invalid user action
+        '404':
+          description: Course or student not found
     'patch':
       tags:
         - Exam
@@ -98,6 +163,10 @@ paths:
         - in: path
           name: exam_id
           description: id del examen
+          required: true
+        - in: path
+          name: student_id
+          description: id del alumno que realizo el examen
           required: true
         - in: header
           name: x-access-token
@@ -112,20 +181,20 @@ paths:
               $ref: '#/components/schemas/infoExamCorrected'
 
       responses:
-        '200':
-          description: Todo okay
         '204':
           description: No content
-        '40x':
-          description: Campo/s inválido/s
         '400':
-          description: Bad Request
+          description: Bad Request, campos invalidos
+        '403':
+          description: Invalid user action
+        '404':
+          description: Course or student not found
 
   '/exams/view/{course_id}':
     'get':
       tags:
         - Exam
-      description: Obtiene la lista de los examenes que el alumno tiene para realizar
+      description: Obtiene la lista de los examenes que el alumno realizo
       parameters:
         - in: path
           name: course_id
@@ -148,6 +217,8 @@ paths:
           description: Curso no existe
         '400':
           description: Bad Request
+        '403':
+          description: Invalid user action 
 
   '/exams/complete/{exam_id}':
     'get':
@@ -156,6 +227,7 @@ paths:
       description: Obtiene la información del examen indicado por el id, para ser completado por el alumno
       parameters:
         - in: path
+          required: true
           name: exam_id
           description: id del examen
         - in: header
@@ -175,6 +247,8 @@ paths:
           description: Bad Request
         '404':
           description: Curso no existe
+        '403':
+          description: Invalid user action 
 
     'post':
       tags:
@@ -182,6 +256,7 @@ paths:
       description: Completo un examen
       parameters:
         - in: path
+          required: true
           name: exam_id
           description: id del examen
         - in: header
@@ -202,8 +277,8 @@ paths:
           description: Bad Request
         '404':
           description: Curso no existe
-        '40x':
-          description: Campo/s inválido/s
+        '403':
+          description: Invalid user action 
 
 components:
   schemas:
@@ -242,12 +317,6 @@ components:
             type: string
           description: Un array con las preguntas que tiene el examen 
           example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
-        id_questions:
-          type: array
-          items:
-            type: string
-          description: array con el id de las preguntas que estan en el array preguntas, el id es del estilo q{question_id}e{exam_id}
-          example: ["q1e3", "q2e3"]
         answers:
           type: array
           items:
@@ -267,23 +336,17 @@ components:
         id_student:
           type: integer
           example: 8
-        id_questions:
-          type: array
-          items:
-            type: string
-          description: un array con el id de las preguntas
-          example: ["q1e3", "q2e3"]
         questions:
           type: array
           items:
             type: string
-          description: un array con las preguntas del examen con el orden correspondido con el de id_questions
+          description: un array con las preguntas del examen con el orden
           example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
         answers:
           type: array
           items:
             type: string  
-          description: un array con las respuestas realizadas por el alumno, con el orden correspondido con el de id_questions
+          description: un array con las respuestas realizadas por el alumno, con el orden
           example: ["Carlos Saul Menem", "85"]
         status:
           type: string
@@ -302,12 +365,6 @@ components:
         id_student:
           type: integer
           example: 8
-        id_questions:
-          type: array
-          items:
-            type: string
-          description: un array con el id de las preguntas
-          example: ["q1e3", "q2e3"]
         corrections:
           type: string
           description: la correccion realizada 
@@ -336,6 +393,14 @@ components:
             type: string
           description: Un array con las preguntas del examen
           example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
+    
+    examPublish:
+      type: object
+      properties:
+        exam_id:
+          type: integer
+          description: Id del examen a ser publicado
+          example: 5
     
     toDoExamInfo:
       type: object

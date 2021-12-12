@@ -6,7 +6,6 @@ class CreateExamSchema(BaseModel):
     id_course: int
     name: str = Field(min_length=10, max_length=255)
     questions: List[str] = []
-    user_id: int
 
 
 class InfoExamCorrectedSchema(BaseModel):
@@ -16,7 +15,6 @@ class InfoExamCorrectedSchema(BaseModel):
     id_questions: List[str] = []
     corrections: str = Field(min_length=0, max_length=255)
     status: str = Field(min_length=8, max_length=11)
-    user_id: int
 
 
 class InfoExamCompletitionSchema(BaseModel):
@@ -24,7 +22,11 @@ class InfoExamCompletitionSchema(BaseModel):
     id_student: int
     questions: List[str] = []
     answers: List[str] = []
-    user_id: int
+
+
+class ExamPublishSchema(BaseModel):
+    exam_id: int
+    course_id: int
 
 
 class UserSchema(BaseModel):
