@@ -44,8 +44,17 @@ class DB:
         exam["id"] = id_exam
         exam["status"] = "draft"
         self.db[table_id] = exam
-        id_course_exams = f"course_{course_id}_exams"
+        id_course_exams = f"course_{course_id}_exams_draft"
         self.exam_courses_db[id_course_exams].append(id_exam)
+
+    def edit_exam(self, exam_id, name, questions):
+        table_id = f"exam_{exam_id}_item"
+        self.db[table_id]["title"] = name
+        self.db[table_id]["questions"] = questions
+
+    def get_course_drafts(self, course_id):
+        table_id = f"course_{course_id}_exams_draft"
+        return self.exam_courses_db.get(table_id, [])
 
     def get_draft_exams(self, course_id):
         exam_ids = self.exam_courses_db[f"course_{course_id}_exams"]
