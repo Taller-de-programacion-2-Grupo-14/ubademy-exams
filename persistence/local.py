@@ -52,9 +52,23 @@ class DB:
         self.db[table_id]["title"] = name
         self.db[table_id]["questions"] = questions
 
+    def publish_exam(self, exam_id, course_id):
+        table_id = f"course_{course_id}_exams_draft"
+        new_id = f"course_{course_id}_exams_published"
+        self.exam_courses_db[table_id].remove(exam_id)
+        self.exam_courses_db[new_id].append(exam_id)
+        self.db[f"exam_{exam_id}_item"]["status"] = "published"
+
     def get_course_drafts(self, course_id):
         table_id = f"course_{course_id}_exams_draft"
         return self.exam_courses_db.get(table_id, [])
+
+    def get_exam_or_none(self, exam_id):
+        id = f"exam_{exam_id}_item"
+        for k in self.db.keys():
+            if k == id:
+                return self.db[k]
+        return None
 
     def get_draft_exams(self, course_id):
         exam_ids = self.exam_courses_db[f"course_{course_id}_exams"]
