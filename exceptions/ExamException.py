@@ -17,3 +17,21 @@ class ExamDoesNotExist(ExamException):
     def __init__(self):
         super().__init__(status.HTTP_404_NOT_FOUND,
                          "The exam does not exist")
+
+
+class ExamsLimitReached(ExamException):
+    def __init__(self):
+        super().__init__(status.HTTP_409_CONFLICT,
+                         "Exams quantity limit reached")
+
+
+class InvalidUserAction(ExamException):
+    def __init__(self):
+        super().__init__(status.HTTP_403_FORBIDDEN,
+                         "Invalid User action")
+
+
+class ExamAlreadyResolvedException(ExamException):
+    def __init__(self):
+        super().__init__(status.HTTP_403_FORBIDDEN,
+                         "Exam already resolved by user")

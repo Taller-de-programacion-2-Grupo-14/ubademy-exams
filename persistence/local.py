@@ -8,33 +8,6 @@ class DB:
         self.exam_courses_db = defaultdict(list)
         self.id = 1
 
-    def get_exams(self, course_id):
-        print(self.exam_courses_db)
-        print(self.db)
-        exam_ids = self.exam_courses_db[f"course_{course_id}_exams"]
-        results = []
-        for exam_id in exam_ids:
-            if self.db[f"exam_{exam_id}_item"]["status"] == "":
-                answer = self.answers_db.get(f"exam_{exam_id}", "")
-                if not answer:
-                    return results
-                title = self.db[f"exam_{exam_id}_item"]["title"]
-                qs = self.db[f"exam_{exam_id}_item"]["questions"]
-                r = {}
-                r["exam_name"] = title
-                r["id_student"] = answer["id_student"]
-                r["questions"] = qs
-                id_qs = []
-                i = 1
-                for x in qs:
-                    id = f"q{i}e{exam_id}"
-                    id_qs.append(id)
-                    i += 1
-                r["id_questions"] = id_qs
-                r["answers"] = answer["answers"]
-                results.append(r)
-        return results
-
     def create_exam(self, course_id, name, questions):
         id_exam = self.id + 1
         table_id = f"exam_{id_exam}_item"
@@ -56,125 +29,142 @@ class DB:
         table_id = f"course_{course_id}_exams_draft"
         new_id = f"course_{course_id}_exams_published"
         self.exam_courses_db[table_id].remove(exam_id)
-        self.exam_courses_db[new_id].append(exam_id)
+        if new_id in self.exam_courses_db:
+            self.exam_courses_db[new_id].append(exam_id)
+        else:
+            self.exam_courses_db[new_id] = [exam_id]
         self.db[f"exam_{exam_id}_item"]["status"] = "published"
 
-    def get_course_drafts(self, course_id):
-        table_id = f"course_{course_id}_exams_draft"
-        return self.exam_courses_db.get(table_id, [])
-
-    def get_exam_or_none(self, exam_id):
-        id = f"exam_{exam_id}_item"
-        for k in self.db.keys():
-            if k == id:
-                return self.db[k]
-        return None
-
-    def get_draft_exams(self, course_id):
-        exam_ids = self.exam_courses_db[f"course_{course_id}_exams"]
+    def get_exams(self, course_id, user_id, grader):
+        ids_published = \
+                    self.exam_courses_db[f"course_{course_id}_exams_published"]
+        exam_ids = []
+        if grader:
+            ids_draft = self.exam_courses_db[f"course_{course_id}_exams_draft"]
+            exam_ids = ids_published + ids_draft
+        else:
+            for exam_id in ids_published:
+                if user_id not in self.answers_db[f"exam_{exam_id}"]:
+                    exam_ids.append(exam_id)
         results = []
         for exam_id in exam_ids:
-            if self.db[f"exam_{exam_id}_item"]["status"] == "draft":
-                title = self.db[f"exam_{exam_id}_item"]["title"]
-                qs = self.db[f"exam_{exam_id}_item"]["questions"]
+            for exam in self.db[f"exam_{exam_id}_item"]:
+                exam_name = exam["title"]
+                questions = exam["questions"]
+                status = exam["status"]
                 r = {}
-                r["exam_name"] = title
-                r["questions"] = qs
-                id_qs = []
-                i = 1
-                for x in qs:
-                    id = f"q{i}e{exam_id}"
-                    id_qs.append(id)
-                    i += 1
-                r["id_questions"] = id_qs
+                r["exam_name"] = exam_name
+                r["questions"] = questions
+                r["status"] = status
+                r["exam_id"] = exam_id
                 results.append(r)
         return results
 
-    def get_exam_info_correction(self, exam_id, student_id):
-        info_exam = self.db.get(f"exam_{exam_id}_item", "")
-        answer = self._get_student_answer(student_id, exam_id)
-        if not answer:
+    def get_resolutions(self, course_id, user_id, grader):
+        exam_ids = self.exam_courses_db[f"course_{course_id}_exams_published"]
+        if not exam_ids:
+            return []
+        resolutions = []
+        if grader:
+            for exam_id in exam_ids:
+                exam = self.db[f"exam_{exam_id}_item"]
+                users = self.answers_db[f"exam_{exam_id}"]
+                if not users:
+                    continue
+                for user in users:
+                    resolution = self.answers_db[f"exam_{exam_id}_{user}"]
+                    r = {}
+                    r["id_student"] = user
+                    r["exam_id"] = exam_id
+                    r["exam_name"] = exam["title"]
+                    r["questions"] = exam["questions"]
+                    r["answers"] = resolution["answers"]
+                    r["status"] = resolution["status"]
+                    r["correction"] = resolution["corrections"]
+                    resolutions.append(r)
+        else:
+            for exam_id in exam_ids:
+                if user_id in self.answers_db[f"exam_{exam_id}"]:
+                    exam = self.db[f"exam_{exam_id}_item"]
+                    resolution = self.answers_db[f"exam_{exam_id}_{user_id}"]
+                    r = {}
+                    r["id_student"] = user_id
+                    r["exam_id"] = exam_id
+                    r["exam_name"] = exam["title"]
+                    r["questions"] = exam["questions"]
+                    r["answers"] = resolution["answers"]
+                    r["status"] = resolution["status"]
+                    r["correction"] = resolution["corrections"]
+                    resolutions.append(r)
+        return resolutions
+
+    def get_resolution(self, exam_id, student_id):
+        if f"exam_{exam_id}" not in self.answers_db:
             return {}
+        if student_id not in self.answers_db[f"exam_{exam_id}"]:
+            return {}
+        exam = self.db.get(f"exam_{exam_id}_item")
+        resolution = self.answers_db[f"exam_{exam_id}_{student_id}"]
         result = {}
         course_id = self._get_course_id(exam_id)
         result["id_course"] = course_id
         result["id_exam"] = exam_id
-        result["id_student"] = answer.get("id_student", "")
-        result["questions"] = info_exam.get("questions", "")
-        result["answers"] = answer.get("answers", "")
-        result["status"] = answer.get("status", "")
-        # se puede sacar el id_questions
-        id_questions = []
-        for i in range(1, len(info_exam.get("questions", ""))+1):
-            id_questions.append(f"q_{i}e{exam_id}")
-        result["id_questions"] = id_questions
+        result["id_student"] = student_id
+        result["questions"] = exam["questions"]
+        result["answers"] = resolution["answers"]
+        result["status"] = resolution["status"]
         return result
 
-    def correct_exam(self, id_exam, id_student, corrections, status):
-        answer, pos = self._get_student_answer(id_student, id_exam)
-        if not answer:
+    def grade_exam(self, id_exam, id_student, corrections, status):
+        if f"exam_{id_exam}" not in self.answers_db:
             return {}
-        self.answers_db[pos]["corrections"] = corrections
-        self.answers_db[pos]["status"] = status
-
-    def get_my_exams(self, course_id, user_id):
-        key_course = f"course_{course_id}_exams"
-        exam_ids = self.exam_courses_db.get(key_course, "")
-        if not exam_ids:
-            return []
-        undonde_exams = []
-        for exam_id in exam_ids:
-            answer, _ = self._get_student_answer(user_id, exam_id)
-            if not answer:
-                undonde_exams.append(exam_id)
-        if not undonde_exams:
-            return []
-        exams_list = []
-        for exam_id in undonde_exams:
-            result = {}
-            title = self.db[f"exam_{exam_id}_item"].get("title", "")
-            qs = self.db[f"exam_{exam_id}_item"].get("questions", "")
-            course_id = self._get_course_id(exam_id)
-            result["name"] = title
-            result["id_exam"] = exam_id
-            result["id_course"] = course_id
-            result["questions"] = qs
-            exams_list.append(result)
-        return exams_list
-
-    def get_todo_exam(self, exam_id, user_id):
-        exam = self.db.get(f"exam_{exam_id}_item", "")
-        if not exam:
+        if id_student not in self.answers_db[f"exam_{id_exam}"]:
             return {}
-        name = exam.get("title", "")
-        questions = exam.get("questions", "")
-        exam_info = {}
-        exam_info["name"] = name
-        exam_info["id_exam"] = exam_id
-        exam_info["questions"] = questions
-        return exam_info
+        self.answers_db[f"exam_{id_exam}_{id_student}"]["corrections"] = \
+            corrections
+        self.answers_db[f"exam_{id_exam}_{id_student}"]["status"] = status
 
-    def complete_exam(self, answers, id_exam, user_id):
+    def get_exam(self, course_id, exam_id, creator):
+        table_id = "exam_{exam_id}_items"
+        if creator:
+            drafts = self.get_course_drafts(course_id, exam_id)
+            if exam_id in drafts:
+                exam = self.db[table_id]
+                name = exam["title"]
+                questions = exam["questions"]
+                r = {}
+                r["name"] = name
+                r["id_exam"] = exam_id
+                r["questions"] = questions
+                return r
+        published = self.get_course_published(course_id, exam_id)
+        if exam_id not in published:
+            return {}
+        exam = self.db[table_id]
+        name = exam["title"]
+        questions = exam["questions"]
+        r = {}
+        r["name"] = name
+        r["id_exam"] = exam_id
+        r["questions"] = questions
+        return r
+
+    def resolve_exam(self, answers, id_exam, user_id):
         new_entry = {}
         new_entry["id_student"] = user_id
         new_entry["answers"] = answers
-        # esto supongo en realidad q podria agregarse al momento d corregir..?
         new_entry["corrections"] = ""
-        new_entry["status"] = "not corrected"
-        table_id = f"exam_{id_exam}"
-        if table_id in self.answers_db:
-            self.answers_db[table_id].append(new_entry)
+        new_entry["status"] = "nc"
+        if f"exam_{id_exam}" in self.answers_db:
+            self.answers_db[f"exam_{id_exam}"].append(user_id)
         else:
-            self.answers_db[table_id] = [new_entry]
+            self.answers_db[f"exam_{id_exam}"] = [user_id]
+        self.answers_db[f"exam_{id_exam}_{user_id}"] = new_entry
 
-    def _get_student_answer(self, student_id, exam_id):
-        answers = self.answers_db.get(f"exam_{exam_id}", "")
-        if not answers:
-            return {}
-        for a in answers:
-            if a.get("id_student", "") == student_id:
-                return a, answers.index(a)
-        return {}, None
+    def get_exam_resoltions(self, exam_id):
+        if f"exam_{exam_id}" in self.answers_db:
+            return self.answers_db[f"exam_{exam_id}"]
+        return []
 
     def _get_course_id(self, exam_id):
         course_id = ""
@@ -182,3 +172,11 @@ class DB:
             if exam_id in value:
                 course_id = key
         return course_id if course_id else None
+
+    def get_course_drafts(self, course_id):
+        table_id = f"course_{course_id}_exams_draft"
+        return self.exam_courses_db.get(table_id, [])
+
+    def get_course_published(self, course_id):
+        table_id = f"course_{course_id}_exams_published"
+        return self.exam_courses_db.get(table_id, [])
