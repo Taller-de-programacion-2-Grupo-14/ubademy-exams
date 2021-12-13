@@ -1,13 +1,13 @@
 {
     "exams":
         {
-            "exam_1": {"title": "Un examen piloto sobre python", 
+            "exam_1_items": {"title": "Un examen piloto sobre python", 
                             "questions": ["Python es un lenguaje tipado?", 
                                           "Mencione un caso en el que no usaria Python", 
                                           "Mencione al menos dos funcionalidades presentes en Python3 y no en Python2.7"],
                             "status": "published"},
 
-            "exam_2": {"title": "Examen de Jardineria 101", 
+            "exam_2_items": {"title": "Examen de Jardineria 101", 
                             "questions": ["Describa al menos tres practicas de jardineria aprendidas a lo largo del curso", 
                                           "Como se sabe cuando una planta debe ser regada?", 
                                           "Mencione al menos tres tipos de tierra y sus beneficios"],
@@ -15,6 +15,7 @@
         },
     "answers":
         {
+            "exam_1": [8, 5],
             "exam_1_8":
 
                     {"id_student": 8, 
