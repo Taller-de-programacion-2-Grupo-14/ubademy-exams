@@ -1,9 +1,13 @@
 import uvicorn
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 import yaml
 from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+import persistence.mongo
+from controllers.Exam import ExamController
+from exceptions.ExamException import ExamException
 from schemas.Schemas import (
     CreateExamSchema,
     GradeResolutionSchema,
@@ -13,10 +17,6 @@ from schemas.Schemas import (
     EditExamSchema
 )
 from service.Exam import ExamService
-from controllers.Exam import ExamController
-from persistence.local import DB
-from exceptions.ExamException import ExamException
-import persistence.mongo
 
 
 def getClient():
@@ -31,7 +31,7 @@ def getClient():
 
 db = persistence.mongo.MongoDB(getClient())
 app = FastAPI()
-exam_service = ExamService(DB())
+exam_service = ExamService(db)
 exam_controller = ExamController(exam_service)
 
 
