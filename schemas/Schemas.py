@@ -25,6 +25,7 @@ class GradeResolutionSchema(BaseModel):
     corrections: str = Field(min_length=0, max_length=255)
     status: str = Field(min_length=8, max_length=11)
     user_id: int
+    name: str
 
 
 class InfoExamCompletitionSchema(BaseModel):
@@ -34,12 +35,14 @@ class InfoExamCompletitionSchema(BaseModel):
     questions: List[str] = []
     answers: List[str] = []
     user_id: int
+    name: str
 
 
 class ExamPublishSchema(BaseModel):
     exam_id: int
     course_id: int
     user_id: int
+    exam_name: str
 
 
 class UserSchema(BaseModel):
