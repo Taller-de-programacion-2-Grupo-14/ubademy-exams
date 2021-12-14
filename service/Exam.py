@@ -10,12 +10,14 @@ from exceptions.ExamException import (
 )
 from validator.ExamValidator import ExamValidator
 from persistence.local import DB
+from external.courses import Courses
 
 
 class ExamService:
     def __init__(self, database: DB):
         self.db = database
         self.validator = ExamValidator(database)
+        self.courses = Courses()
 
     def create_exam(self, create_exam_info, user_id):
         user_id = create_exam_info["user_id"]
