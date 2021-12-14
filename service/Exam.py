@@ -15,7 +15,7 @@ class ExamService:
         self.db = database
         self.validator = ExamValidator(database)
 
-    def create_exam(self, create_exam_info, user_id):
+    def create_exam(self, create_exam_info):
         user_id = create_exam_info["user_id"]
         course_id = create_exam_info["id_course"]
         if not self.validator.is_course_creator(course_id, user_id):
@@ -90,7 +90,7 @@ class ExamService:
     def get_exam(self, course_id, exam_id, user_id):
         grader = self.validator.is_grader(course_id, user_id)
         student = self.validator.is_student(course_id, user_id)
-        creator = self.validator.is_creator(course_id, user_id)
+        #creator = self.validator.is_creator(course_id, user_id)
         if not grader or not student:
             raise InvalidUserAction
         exam = self.db.getExam(exam_id, course_id)

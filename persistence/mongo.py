@@ -21,16 +21,16 @@ class MongoDB:
         key = _getExamKey(name, courseId)
         item = {'status': 'drafted'}
         item.update({'questions': questions})
-        response = self.db.exams.update_one(key, {'$set': questions}, upsert=True)
-        return response.acknowledge
+        response = self.db.exams.update_one(key, {'$set': item}, upsert=True)
+        return response.acknowledged
 
     def editExam(self, courseId, name, questions):
         key = _getExamKey(name, courseId)
         response = self.db.exams.update_one(key, {'$set': {'questions': questions}}, upsert=True)
-        return response.acknowledge
+        return response.acknowledged
 
     def getExam(self, name, courseId):
-        return self.db.exams.find_one(_getExamKey(name, courseId))
+        return self.db.exams.find_one(_getExamKey(name, courseId), {'_id': 0})
 
     def getExams(self, name, courseId):
         item = {}
@@ -43,16 +43,16 @@ class MongoDB:
     def publishExam(self, name, courseId):
         key = _getExamKey(name, courseId)
         response = self.db.exams.update_one(key, {'$set': {'status': 'published'}}, upsert=True)
-        return response.acknowledge
+        return response.acknowledged
 
     def addResolution(self, userId, examName, courseId, item: dict):
         key = _getKeyResolution(examName, userId, courseId)
         response = self.db.responses.update_one(key, {'$set': {'answer': item}}, upsert=True)
-        return response.acknowledge
+        return response.acknowledged
 
     def getResolution(self, name, userId, courseId):
         key = _getKeyResolution(name, userId, courseId)
-        return self.db.responses.find_one(key, upsert=True)
+        return self.db.responses.find_one(key, {'_id': 0})
 
     def getResponses(self, name, userId, courseId):
         key = _getKeyResolution(name, userId, courseId)
@@ -63,4 +63,4 @@ class MongoDB:
             raise Exception
         correction = {'correction': corrections, 'status': status}
         response = self.db.responses.update_one(_getKeyResolution(name, userId, courseId), {'$set': correction})
-        return response.acknowledge
+        return response.acknowledged

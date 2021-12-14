@@ -25,7 +25,7 @@ def getClient():
     env = os.getenv('ENVIROMENT')
     env = env if env else 'test'
     client = pymongo.MongoClient(
-        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.gpv9o.mongodb.net/exams?retryWrites=true&w=majority")
+        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.39prr.mongodb.net/exams?retryWrites=true&w=majority")
     return client[env]
 
 
