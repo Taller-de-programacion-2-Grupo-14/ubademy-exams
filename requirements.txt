@@ -15,7 +15,7 @@ platformdirs==2.4.0
 pycodestyle==2.8.0
 pydantic==1.8.2
 pyflakes==2.4.0
-pymongo==3.12.1
+pymongo[tls,srv,gssapi]==4.0.1
 PyYAML==6.0
 regex==2021.11.10
 requests==2.26.0

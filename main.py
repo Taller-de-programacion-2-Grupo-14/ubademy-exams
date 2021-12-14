@@ -1,9 +1,13 @@
 import uvicorn
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-from fastapi.encoders import jsonable_encoder
 import yaml
 from fastapi import FastAPI, Request, status
+from fastapi.encoders import jsonable_encoder
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
+
+import persistence.mongo
+from controllers.Exam import ExamController
+from exceptions.ExamException import ExamException
 from schemas.Schemas import (
     CreateExamSchema,
     GradeResolutionSchema,
@@ -13,12 +17,21 @@ from schemas.Schemas import (
     EditExamSchema
 )
 from service.Exam import ExamService
-from controllers.Exam import ExamController
-from persistence.local import DB
-from exceptions.ExamException import ExamException
 
+
+def getClient():
+    import pymongo
+    import os
+    env = os.getenv('ENVIROMENT')
+    env = env if env else 'test'
+    client = pymongo.MongoClient(
+        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.39prr.mongodb.net/exams?retryWrites=true&w=majority")
+    return client[env]
+
+
+db = persistence.mongo.MongoDB(getClient())
 app = FastAPI()
-exam_service = ExamService(DB())
+exam_service = ExamService(db)
 exam_controller = ExamController(exam_service)
 
 
@@ -48,7 +61,7 @@ def get_resolutions(course_id: int, user: UserSchema):
 
 
 @app.get("/resolution/{course_id}/{exam_id}/{student_id}")
-def get_exam_correct(course_id: int, exam_id: int, student_id: int,
+def get_exam_correct(course_id: int, exam_id: str, student_id: int,
                      user: UserSchema):
     return exam_controller.handle_get_resolution(course_id, exam_id,
                                                  student_id,
@@ -61,7 +74,7 @@ def grade_resolution(grade_resolution_inf: GradeResolutionSchema):
 
 
 @app.get("/exams/{course_id}/{exam_id}")
-def get_exam(course_id: int, exam_id: int, user: UserSchema):
+def get_exam(course_id: int, exam_id: str, user: UserSchema):
     return exam_controller.handle_get_exam(course_id, exam_id, user.user_id)
 
 
