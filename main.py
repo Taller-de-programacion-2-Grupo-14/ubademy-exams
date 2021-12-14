@@ -4,6 +4,8 @@ import uvicorn  # ToDo Before merge delete this
 # from fastapi.responses import JSONResponse
 # from fastapi.encoders import jsonable_encoder
 from fastapi import FastAPI
+
+import persistence.mongo
 from schemas.Schemas import (
     CreateExamSchema,
     InfoExamCorrectedSchema,
@@ -14,6 +16,18 @@ from service.Exam import ExamService
 from controllers.Exam import ExamController
 from persistence.local import DB
 
+
+def getClient():
+    import pymongo
+    import os
+    env = os.getenv('ENVIROMENT')
+    env = env if env else 'test'
+    client = pymongo.MongoClient(
+        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.gpv9o.mongodb.net/exams?retryWrites=true&w=majority")
+    return client[env]
+
+
+db = persistence.mongo.MongoDB(getClient())
 app = FastAPI()
 exam_service = ExamService(DB())
 exam_controller = ExamController(exam_service)
