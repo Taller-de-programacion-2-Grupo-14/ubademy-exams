@@ -1,8 +1,5 @@
-from persistence.local import DB
-
-
 class ExamValidator:
-    def __init__(self, database: DB):
+    def __init__(self, database):
         self.db = database
 
     def is_course_creator(self, course_id, user_id):
@@ -23,6 +20,6 @@ class ExamValidator:
         creator = self.is_course_creator(course_id, user_id)
         return collab or creator
 
-    def resolution_exists(self, id_exam, user_id):
-        resolutions = self.db.get_exam_resoltions(id_exam)
-        return user_id in resolutions
+    #def resolution_exists(self, id_exam, user_id):
+    #    resolutions = self.db.get_exam_resoltions(id_exam)
+    #    return user_id in resolutions
