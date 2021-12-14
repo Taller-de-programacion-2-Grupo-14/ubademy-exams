@@ -9,7 +9,15 @@ class CreateExamSchema(BaseModel):
     user_id: int
 
 
-class InfoExamCorrectedSchema(BaseModel):
+class EditExamSchema(BaseModel):
+    id_course: int
+    exam_id: int
+    name: str = Field(min_length=10, max_length=255)
+    questions: List[str] = []
+    user_id: int
+
+
+class GradeResolutionSchema(BaseModel):
     id_course: int
     id_exam: int
     id_student: int
@@ -21,9 +29,16 @@ class InfoExamCorrectedSchema(BaseModel):
 
 class InfoExamCompletitionSchema(BaseModel):
     id_exam: int
+    course_id: int
     id_student: int
     questions: List[str] = []
     answers: List[str] = []
+    user_id: int
+
+
+class ExamPublishSchema(BaseModel):
+    exam_id: int
+    course_id: int
     user_id: int
 
 
