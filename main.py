@@ -61,7 +61,7 @@ def get_resolutions(course_id: int, user: UserSchema):
 
 
 @app.get("/resolution/{course_id}/{exam_id}/{student_id}")
-def get_exam_correct(course_id: int, exam_id: int, student_id: int,
+def get_exam_correct(course_id: int, exam_id: str, student_id: int,
                      user: UserSchema):
     return exam_controller.handle_get_resolution(course_id, exam_id,
                                                  student_id,
@@ -74,7 +74,7 @@ def grade_resolution(grade_resolution_inf: GradeResolutionSchema):
 
 
 @app.get("/exams/{course_id}/{exam_id}")
-def get_exam(course_id: int, exam_id: int, user: UserSchema):
+def get_exam(course_id: int, exam_id: str, user: UserSchema):
     return exam_controller.handle_get_exam(course_id, exam_id, user.user_id)
 
 
