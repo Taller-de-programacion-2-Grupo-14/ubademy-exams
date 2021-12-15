@@ -48,10 +48,14 @@ class ExamService:
     def get_exams(self, course_id, user_id):
         creator = self.validator.is_course_creator(course_id, user_id)
         student = self.validator.is_student(course_id, user_id)
-        if not creator and not student:
+        collaborator = self.validator.is_course_collaborator(course_id,
+                                                             user_id)
+        if not creator and not student and not collaborator:
             raise InvalidUserAction
-        if not creator:
-            exams = self.getExamsNotDone(user_id, course_id)
+        if student:
+            exams = self.get_undone_exams(user_id, course_id)
+        if collaborator:
+            exams = self.db.get_course_status(course_id, "published")
         else:
             exams = self.db.get_exams(course_id, creator)
         return exams
@@ -128,14 +132,14 @@ class ExamService:
         if not existance:
             raise ExamDoesNotExist
 
-    def getExamsNotDone(self, userId, courseId):
-        courseExams = self.db.get_exams(courseId, False)
-        userDone = self.db.get_resolutions(userId, courseId)
+    def get_undone_exams(self, user_id, course_id):
+        course_exams = self.db.get_exams(course_id, False)
+        user_done = self.db.get_resolutions(user_id, course_id)
         exams, done = {}, set()
-        for v in userDone:
+        for v in user_done:
             done.add(v.get('name'))
-        for v in courseExams:
+        for v in course_exams:
             title = v.get('title')
             if title and title not in done:
                 exams.update({v['title']: v})
-        return exams
+        return exams.values()
