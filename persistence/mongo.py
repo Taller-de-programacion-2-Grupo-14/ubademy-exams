@@ -28,7 +28,7 @@ class MongoDB:
         key = _get_exam_key(name, course_id)
         response = self.db.exams.update_one(key,
                                             {'$set': {'questions': questions,
-                                             'name': name}}, upsert=True)
+                                                      'name': name}}, upsert=True)
         return response.acknowledged
 
     def get_exam(self, name, course_id, creator):
@@ -56,11 +56,11 @@ class MongoDB:
     def add_resolution(self, user_id, exam_name, course_id, item: dict):
         key = _get_key_resolution(exam_name, user_id, course_id)
         response = self.db.responses.update_one(
-                                                key,
-                                                {'$set':
-                                                    {'answer': item,
-                                                        "status": "nc"}},
-                                                upsert=True)
+            key,
+            {'$set':
+             {'answer': item,
+              "status": "nc"}},
+            upsert=True)
         return response.acknowledged
 
     def get_resolution(self, name, user_id, course_id):
