@@ -121,6 +121,7 @@ class ExamService:
         for exam in drafts:
             if exam["title"] == name:
                 existance = True
+                break
         if not existance:
             raise ExamDoesNotExist
 
@@ -130,6 +131,7 @@ class ExamService:
         for exam in published:
             if exam["title"] == name:
                 existance = True
+                break
         if not existance:
             raise ExamDoesNotExist
 
