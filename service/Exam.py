@@ -81,11 +81,10 @@ class ExamService:
         exam_info = self.db.get_resolution(exam_id, student_id, course_id)
         return exam_info
 
-    def grade_resolution(self, grade_resolution_data):
+    def grade_resolution(self, course_id, grade_resolution_data):
         id_student = grade_resolution_data["id_student"]
         corrections = grade_resolution_data["corrections"]
         status = grade_resolution_data["status"]
-        course_id = grade_resolution_data["id_course"]
         user_id = grade_resolution_data["user_id"]
         name = grade_resolution_data["name"]
         self._check_published_exam_existance(course_id, name)

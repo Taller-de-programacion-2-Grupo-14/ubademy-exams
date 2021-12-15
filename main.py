@@ -71,9 +71,9 @@ def get_resolution(course_id: int, student_id: int, user: UserSchema):
                                                  user.user_id)
 
 
-@app.patch("/resolution/grade/{student_id}")
-def grade_resolution(grade_resolution_inf: GradeResolutionSchema):
-    return exam_controller.handle_grade_resolution(grade_resolution_inf.dict())
+@app.patch("/resolution/grade/{course_id}/{student_id}")
+def grade_resolution(course_id: int, grade_resolution_inf: GradeResolutionSchema):
+    return exam_controller.handle_grade_resolution(course_id, grade_resolution_inf.dict())
 
 
 @app.get("/exam/{course_id}/{exam_name}")

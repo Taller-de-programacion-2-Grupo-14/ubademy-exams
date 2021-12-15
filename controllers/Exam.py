@@ -35,8 +35,8 @@ class ExamController:
                                                 student_id, user_id)
         return self._get_list_response(exam_info)
 
-    def handle_grade_resolution(self, grade_resolution_data):
-        self.service.grade_resolution(grade_resolution_data)
+    def handle_grade_resolution(self, course_id, grade_resolution_data):
+        self.service.grade_resolution(course_id, grade_resolution_data)
         return {"message": "Exam created successfully",
                 "status": status.HTTP_200_OK}
 
