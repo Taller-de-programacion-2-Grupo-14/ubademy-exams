@@ -50,7 +50,10 @@ class ExamService:
         student = self.validator.is_student(course_id, user_id)
         if not creator and not student:
             raise InvalidUserAction
-        exams = self.db.get_exams(course_id, creator)
+        if not creator:
+            exams = self.getExamsNotDone(user_id, course_id)
+        else:
+            exams = self.db.get_exams(course_id, creator)
         return exams
 
     def get_resolutions(self, course_id, user_id):
@@ -124,3 +127,15 @@ class ExamService:
                 existance = True
         if not existance:
             raise ExamDoesNotExist
+
+    def getExamsNotDone(self, userId, courseId):
+        courseExams = self.db.get_exams(userId, False)
+        userDone = self.db.get_resolutions(userId, courseId)
+        exams, done = {}, set()
+        for v in userDone:
+            done.add(v.get('name'))
+        for v in courseExams:
+            title = v.get('title')
+            if title and title in done:
+                exams.update({v['title']: v})
+        return exams
