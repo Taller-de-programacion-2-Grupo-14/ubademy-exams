@@ -142,4 +142,4 @@ class ExamService:
             title = v.get('title')
             if title and title not in done:
                 exams.update({v['title']: v})
-        return exams.values()
+        return list(exams.values())
