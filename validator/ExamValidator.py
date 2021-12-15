@@ -21,7 +21,7 @@ class ExamValidator:
 
     def is_course_collaborator(self, course_id, user_id):
         course = self.courses.get_course(course_id, user_id)
-        return course.get("can_collaborate")
+        return not course.get("can_collaborate", True)
 
     def is_grader(self, course_id, user_id):
         collab = self.is_course_collaborator(course_id, user_id)
