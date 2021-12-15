@@ -39,8 +39,8 @@ class ExamController:
         return {"message": "Exam created successfully",
                 "status": status.HTTP_200_OK}
 
-    def handle_get_exam(self, course_id, exam_id, user_id):
-        exam = self.service.get_exam(course_id, exam_id, user_id)
+    def handle_get_exam(self, course_id, exam_name, user_id):
+        exam = self.service.get_exam(course_id, exam_name, user_id)
         return {"message": exam, "status": status.HTTP_200_OK}
 
     def handle_resolve_exam(self, answers):

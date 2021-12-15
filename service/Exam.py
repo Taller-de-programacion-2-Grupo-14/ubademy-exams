@@ -87,12 +87,12 @@ class ExamService:
             raise InvalidUserAction
         self.db.grade_exam(name, id_student, course_id, corrections, status)
 
-    def get_exam(self, course_id, exam_id, user_id):
+    def get_exam(self, course_id, exam_name, user_id):
         student = self.validator.is_student(course_id, user_id)
         creator = self.validator.is_course_creator(course_id, user_id)
         if not creator or not student:
             raise InvalidUserAction
-        exam = self.db.get_exam(exam_id, course_id, creator)
+        exam = self.db.get_exam(exam_name, course_id, creator)
         if not exam:
             raise ExamDoesNotExist
         return exam

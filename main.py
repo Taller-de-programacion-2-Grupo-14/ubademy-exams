@@ -16,6 +16,7 @@ from schemas.Schemas import (
     EditExamSchema
 )
 from service.Exam import ExamService
+import uvicorn
 
 
 def get_client():
@@ -72,9 +73,9 @@ def grade_resolution(grade_resolution_inf: GradeResolutionSchema):
     return exam_controller.handle_grade_resolution(grade_resolution_inf.dict())
 
 
-@app.get("/exam/{course_id}")
-def get_exam(course_id: int, user: UserSchema):
-    return exam_controller.handle_get_exam(course_id, user.user_id)
+@app.get("/exam/{course_id}/{exam_name}")
+def get_exam(course_id: int, exam_name: str, user: UserSchema):
+    return exam_controller.handle_get_exam(course_id, exam_name, user.user_id)
 
 
 @app.post("/exam/resolve")
@@ -132,14 +133,12 @@ def handleUnknownException(request: Request, exc: Exception):
         content=jsonable_encoder(
             {
                 "message":
-                    f"Unknown error: {type(exc).__name__} with message: \
-                    {exc.args[0]}",
+                    f"Unknown error: {type(exc).__name__} with message: {exc.args[0]}",
                 "status": status.HTTP_503_SERVICE_UNAVAILABLE,
             }
         ),
     )
 
 
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", port=8080, reload=True)
-#   )
+if __name__ == "__main__":
+    uvicorn.run("main:app", port=8080, reload=True)
