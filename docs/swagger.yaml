@@ -38,17 +38,12 @@ paths:
         '409':
           description: Exams quantity limit reached
 
-  '/exams/edit/{exam_id}':
+  '/exams/edit':
     'put':
       tags:
         - Exam
       description: Edita un examen que aun no fue publicado
       parameters:
-        - in: path
-          required: true
-          name: exam_id
-          description: id del examen
-          example: 5
         - in: header
           name: x-access-token
           required: true
@@ -153,7 +148,7 @@ paths:
         '403':
           description: Invalid user action
   
-  '/resolution/{course_id}/{exam_id}/{student_id}':
+  '/resolution/{course_id}/{student_id}':
     'get':
       tags:
         - Exam
@@ -162,10 +157,6 @@ paths:
         - in: path
           name: course_id
           description: id del curso
-          required: true
-        - in: path
-          name: exam_id
-          description: id del examen
           required: true
         - in: path
           required: true
@@ -191,7 +182,7 @@ paths:
           description: Invalid user action
         '404':
           description: Course or student not found
-  '/resolution/grade/{exam_id}/{student_id}':
+  '/resolution/grade/{course_id}/{student_id}':
     'patch':
       tags:
         - Exam
@@ -200,10 +191,6 @@ paths:
         - in: path
           name: course_id
           description: id del curso
-          required: true
-        - in: path
-          name: exam_id
-          description: id del examen
           required: true
         - in: path
           name: student_id
@@ -231,7 +218,7 @@ paths:
         '404':
           description: Course or student not found
 
-  '/exams/{course_id}/{exam_id}':
+  '/exam/{course_id}':
     'get':
       tags:
         - Exam
@@ -241,10 +228,6 @@ paths:
           name: course_id
           description: id del curso
           required: true
-        - in: path
-          required: true
-          name: exam_id
-          description: id del examen
         - in: header
           name: x-access-token
           required: true
@@ -264,7 +247,7 @@ paths:
           description: Curso no existe
         '403':
           description: Invalid user action 
-  '/exams/resolve/{course_id}/{exam_id}':
+  '/exams/resolve/{course_id}':
     'post':
       tags:
         - Exam
@@ -274,10 +257,6 @@ paths:
           name: course_id
           description: id del curso
           required: true
-        - in: path
-          required: true
-          name: exam_id
-          description: id del examen
         - in: header
           name: x-access-token
           required: true
@@ -333,10 +312,6 @@ components:
             type: string
           description: Un array con las preguntas que tiene el examen 
           example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
-        id_exam:
-          type: int
-          description: id del examen
-          example: 5
         status:
           type: string
           description: Estado del examen, puede ser published o draft
@@ -348,9 +323,6 @@ components:
         id_student:
           type: integer
           description: Id del alumno que completo dicha resolucion
-        exam_id:
-          type: integer
-          description: id del examen
         exam_name:
           type: string
           example: 'Examen de biologia'
@@ -379,9 +351,9 @@ components:
         id_course:
           type: integer
           example: 8
-        id_exam:
-          type: integer
-          example: 8
+        name:
+          type: string
+          description: nombre del examen
         id_student:
           type: integer
           example: 8
@@ -405,10 +377,10 @@ components:
     infoExamCorrected:
       type: object
       properties:
+        name:
+          type: string
+          description: nombre del examen
         id_course:
-          type: integer
-          example: 8
-        id_exam:
           type: integer
           example: 8
         id_student:
@@ -429,9 +401,6 @@ components:
         name:
           type: string
           example: 'Primer examen del curso de jardineria'
-        id_exam:
-          type: integer
-          example: 1
         id_course:
           type: integer
           description: id del curso
@@ -446,10 +415,12 @@ components:
     examPublish:
       type: object
       properties:
-        exam_id:
+        exam_name:
+          type: string
+          description: Nombre del examen
+        course_id:
           type: integer
-          description: Id del examen a ser publicado
-          example: 5
+          descricption: id del curso
     
     examInfo:
       type: object
@@ -457,9 +428,6 @@ components:
         name:
           type: string
           example: 'Primer examen del curso de jardineria'
-        id_exam:
-          type: integer
-          example: 1
         questions: 
           type: array
           items:
@@ -470,9 +438,9 @@ components:
     examCompletionInfo:
       type: object
       properties:
-        id_exam:
-          type: integer
-          example: 1
+        name:
+          type: string
+          description: nombre del examen
         questions: 
           type: array
           items:

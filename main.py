@@ -73,12 +73,12 @@ def grade_resolution(grade_resolution_inf: GradeResolutionSchema):
     return exam_controller.handle_grade_resolution(grade_resolution_inf.dict())
 
 
-@app.get("/exams/{course_id}")
+@app.get("/exam/{course_id}")
 def get_exam(course_id: int, user: UserSchema):
     return exam_controller.handle_get_exam(course_id, user.user_id)
 
 
-@app.post("/exams/resolve")
+@app.post("/exam/resolve")
 def resolve_exam(answers: InfoExamCompletitionSchema):
     return exam_controller.handle_resolve_exam(answers)
 
@@ -138,4 +138,9 @@ def handleUnknownException(request: Request, exc: Exception):
                 "status": status.HTTP_503_SERVICE_UNAVAILABLE,
             }
         ),
+    )
+
+
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", port=8080, reload=True)
     )
