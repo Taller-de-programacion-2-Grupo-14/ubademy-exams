@@ -44,8 +44,8 @@ class ExamController:
         exam = self.service.get_exam(course_id, exam_name, user_id)
         return {"message": exam, "status": status.HTTP_200_OK}
 
-    def handle_resolve_exam(self, answers):
-        self.service.complete_exam(answers)
+    def handle_resolve_exam(self, course_id, answers):
+        self.service.complete_exam(course_id, answers)
         return {"message": "Exam completed successfully",
                 "status": status.HTTP_200_OK}
 

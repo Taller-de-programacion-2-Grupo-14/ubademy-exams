@@ -104,10 +104,9 @@ class ExamService:
             raise ExamDoesNotExist
         return exam
 
-    def complete_exam(self, resolution):
+    def complete_exam(self, course_id, resolution):
         answers = resolution["answers"]
         user_id = resolution["user_id"]
-        course_id = resolution["course_id"]
         name = resolution['name']
         self._check_published_exam_existance(course_id, name)
         student = self.validator.is_student(course_id, user_id)

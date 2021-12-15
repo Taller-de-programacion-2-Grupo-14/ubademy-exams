@@ -28,7 +28,6 @@ class GradeResolutionSchema(BaseModel):
 
 
 class InfoExamCompletitionSchema(BaseModel):
-    course_id: int
     questions: List[str] = []
     answers: List[str] = []
     user_id: int

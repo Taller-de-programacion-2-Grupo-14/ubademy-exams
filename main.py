@@ -83,7 +83,7 @@ def get_exam(course_id: int, exam_name: str, user: UserSchema):
 
 @app.post("/exams/resolve/{course_id}")
 def resolve_exam(course_id: int, answers: InfoExamCompletitionSchema):
-    return exam_controller.handle_resolve_exam(answers.dict())
+    return exam_controller.handle_resolve_exam(course_id, answers.dict())
 
 
 @app.get("/doc-yml")
