@@ -1,5 +1,5 @@
 import yaml
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, status, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
@@ -16,6 +16,7 @@ from schemas.Schemas import (
     EditExamSchema
 )
 from service.Exam import ExamService
+from queryparams.query_params import ExamQueryParams
 
 
 def get_client():
@@ -23,8 +24,9 @@ def get_client():
     import os
     env = os.getenv('ENVIROMENT')
     env = env if env else 'test'
+    url = f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0"
     client = pymongo.MongoClient(
-        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.39prr.mongodb.net/exams?retryWrites=true&w=majority")
+                url+".39prr.mongodb.net/exams?retryWrites=true&w=majority")
     return client[env]
 
 
@@ -50,8 +52,11 @@ def publish_exam(publish_info: ExamPublishSchema):
 
 
 @app.get("/exams/{course_id}")
-def get_exams(course_id: int, user: UserSchema):
-    return exam_controller.handle_get_exams(course_id, user.user_id)
+def get_exams(course_id: int, user: UserSchema,
+              filter: ExamQueryParams = Depends(ExamQueryParams)):
+    return exam_controller.handle_get_exams(course_id,
+                                            user.user_id,
+                                            filter.get_data())
 
 
 @app.get("/resolutions/{course_id}")
@@ -126,12 +131,14 @@ def handle_course_exception(request: Request, exc: ExamException):
 
 @app.exception_handler(Exception)
 def handleUnknownException(request: Request, exc: Exception):
+    error = f"{type(exc).__name__}"
+    msg = f"{exc.args[0]}"
     return JSONResponse(
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         content=jsonable_encoder(
             {
                 "message":
-                    f"Unknown error: {type(exc).__name__} with message: {exc.args[0]}",
+                    f"Unknown error: {error} with message: {msg}",
                 "status": status.HTTP_503_SERVICE_UNAVAILABLE,
             }
         ),
