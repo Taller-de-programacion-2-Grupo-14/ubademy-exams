@@ -2,7 +2,7 @@ def _get_exam_key(name, course_id):
     return {'title': name, 'course': course_id}
 
 
-def _get_key_resolution(name="", user_id="", course_id=""):
+def _get_key_resolution(name, user_id, course_id):
     key = {}
     if name:
         key.update({'exam': name})
@@ -37,20 +37,13 @@ class MongoDB:
             exam_key.update({'status': 'published'})
         return self.db.exams.find_one(exam_key, {'_id': 0})
 
-    def get_exams(self, course_id, user_id, creator):
+    def get_exams(self, course_id, creator):
         item = {}
         if course_id:
             item.update({'course': course_id})
         if not creator:
             item.update({'status': 'published'})
         exams = list(self.db.exams.find(item))
-        item_answers = _get_key_resolution(user_id=user_id)
-        if not creator:
-            for exam in exams:
-                name = exam["title"]
-                for item in item_answers:
-                    if item["name"] == name:
-                        exams.remove(exam)
         return exams
 
     def publish_exam(self, name, course_id):
@@ -75,7 +68,7 @@ class MongoDB:
         return self.db.responses.find_one(key, {'_id': 0})
 
     def get_responses(self, name, user_id, course_id, grader):
-        key = _get_key_resolution(name=name, course_id=course_id)
+        key = _get_key_resolution(name=name, user_id="", course_id=course_id)
         if not grader:
             key.update({'user_id': user_id})
         return list(self.db.exams.find(key))
@@ -84,10 +77,7 @@ class MongoDB:
         if not (name and user_id and course_id):
             raise Exception
         correction = {'correction': corrections, 'status': status}
-        response = self.db.responses.update_one(_get_key_resolution(
-                                                                   name,
-                                                                   user_id,
-                                                                   course_id),
+        response = self.db.responses.update_one(_get_key_resolution(name, user_id, course_id),
                                                 {'$set': correction})
         return response.acknowledged
 

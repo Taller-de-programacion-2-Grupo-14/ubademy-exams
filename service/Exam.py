@@ -19,7 +19,7 @@ class ExamService:
         course_id = create_exam_info["id_course"]
         if not self.validator.is_course_creator(course_id, user_id):
             raise IsNotTheCourseCreator
-        exams = len(self.db.get_exams(course_id, None, True))
+        exams = len(self.db.get_exams(course_id, True))
         if self.validator.exams_limit_reached(exams, course_id, user_id):
             raise ExamsLimitReached
         name = create_exam_info["name"]
@@ -50,7 +50,7 @@ class ExamService:
         student = self.validator.is_student(course_id, user_id)
         if not creator and not student:
             raise InvalidUserAction
-        exams = self.db.get_exams(course_id, user_id, creator)
+        exams = self.db.get_exams(course_id, creator)
         return exams
 
     def get_resolutions(self, course_id, user_id):

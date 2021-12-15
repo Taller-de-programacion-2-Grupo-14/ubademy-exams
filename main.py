@@ -25,7 +25,7 @@ def get_client():
     env = os.getenv('ENVIROMENT')
     env = env if env else 'test'
     client = pymongo.MongoClient(
-        f"mongodb+srv://ubademy:{os.getenv{'UBADEMY_PASSWORD'}}@cluster0.39prr.mongodb.net/exams?retryWrites=true&w=majority")
+        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.39prr.mongodb.net/exams?retryWrites=true&w=majority")
     return client[env]
 
 
@@ -143,3 +143,4 @@ def handleUnknownException(request: Request, exc: Exception):
 
 # if __name__ == "__main__":
 #     uvicorn.run("main:app", port=8080, reload=True)
+    )
