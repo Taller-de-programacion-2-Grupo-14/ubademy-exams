@@ -60,8 +60,7 @@ def get_resolutions(course_id: int, user: UserSchema):
 
 
 @app.get("/resolution/{course_id}/{student_id}")
-def get_resolution(course_id: int, student_id: int,
-                     user: UserSchema):
+def get_resolution(course_id: int, student_id: int, user: UserSchema):
     return exam_controller.handle_get_resolution(course_id,
                                                  student_id,
                                                  user.user_id)
