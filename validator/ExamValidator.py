@@ -8,20 +8,20 @@ class ExamValidator:
 
     def is_course_creator(self, course_id, user_id):
         course = self.courses.get_course(course_id, user_id)
-        return course["can_edit"]
+        return course.get("can_edit")
 
     def exams_limit_reached(self, number, course_id, user_id):
         course = self.courses.get_course(course_id, user_id)
-        og_quantity = course["exams"]
-        return og_quantity == number
+        original_quantity = course.get("exams", -1)
+        return original_quantity <= number
 
     def is_student(self, course_id, user_id):
         course = self.courses.get_course(course_id, user_id)
-        return course["is_suscribed"]
+        return course.get("is_subscribed")
 
     def is_course_collaborator(self, course_id, user_id):
         course = self.courses.get_course(course_id, user_id)
-        return course["can_collaborate"]
+        return course.get("can_collaborate")
 
     def is_grader(self, course_id, user_id):
         collab = self.is_course_collaborator(course_id, user_id)

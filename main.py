@@ -25,8 +25,7 @@ def get_client():
     env = os.getenv('ENVIROMENT')
     env = env if env else 'test'
     client = pymongo.MongoClient(
-        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.39prr.\
-            mongodb.net/exams?retryWrites=true&w=majority")
+        f"mongodb+srv://ubademy:ubademy14@cluster0.39prr.mongodb.net/exams?retryWrites=true&w=majority")
     return client[env]
 
 
@@ -74,12 +73,12 @@ def grade_resolution(grade_resolution_inf: GradeResolutionSchema):
     return exam_controller.handle_grade_resolution(grade_resolution_inf.dict())
 
 
-@app.get("/exams/{course_id}")
+@app.get("/exam/{course_id}")
 def get_exam(course_id: int, user: UserSchema):
     return exam_controller.handle_get_exam(course_id, user.user_id)
 
 
-@app.post("/exams/resolve")
+@app.post("/exam/resolve")
 def resolve_exam(answers: InfoExamCompletitionSchema):
     return exam_controller.handle_resolve_exam(answers)
 
@@ -142,5 +141,5 @@ def handleUnknownException(request: Request, exc: Exception):
     )
 
 
-if __name__ == "__main__":
-    uvicorn.run("main:app", port=8080, reload=True)
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", port=8080, reload=True)
