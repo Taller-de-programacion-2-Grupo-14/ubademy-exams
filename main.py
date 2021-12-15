@@ -19,17 +19,18 @@ from schemas.Schemas import (
 from service.Exam import ExamService
 
 
-def getClient():
+def get_client():
     import pymongo
     import os
     env = os.getenv('ENVIROMENT')
     env = env if env else 'test'
     client = pymongo.MongoClient(
-        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.39prr.mongodb.net/exams?retryWrites=true&w=majority")
+        f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0.39prr.\
+            mongodb.net/exams?retryWrites=true&w=majority")
     return client[env]
 
 
-db = persistence.mongo.MongoDB(getClient())
+db = persistence.mongo.MongoDB(get_client())
 app = FastAPI()
 exam_service = ExamService(db)
 exam_controller = ExamController(exam_service)
@@ -40,7 +41,7 @@ def create_exam(create_exam_data: CreateExamSchema):
     return exam_controller.handle_create_exam(create_exam_data.dict())
 
 
-@app.put("/exams/edit/{exam_id}")
+@app.put("/exams/edit")
 def edit_exam(edit_exam_data: EditExamSchema):
     return exam_controller.handle_edit_exam(edit_exam_data.dict())
 
@@ -60,22 +61,22 @@ def get_resolutions(course_id: int, user: UserSchema):
     return exam_controller.handle_get_resolutions(course_id, user.user_id)
 
 
-@app.get("/resolution/{course_id}/{exam_id}/{student_id}")
-def get_exam_correct(course_id: int, exam_id: str, student_id: int,
+@app.get("/resolution/{course_id}/{student_id}")
+def get_exam_correct(course_id: int, student_id: int,
                      user: UserSchema):
-    return exam_controller.handle_get_resolution(course_id, exam_id,
+    return exam_controller.handle_get_resolution(course_id,
                                                  student_id,
                                                  user.user_id)
 
 
-@app.patch("/resolution/grade/{exam_id}/{student_id}")
+@app.patch("/resolution/grade/{student_id}")
 def grade_resolution(grade_resolution_inf: GradeResolutionSchema):
     return exam_controller.handle_grade_resolution(grade_resolution_inf.dict())
 
 
-@app.get("/exams/{course_id}/{exam_id}")
-def get_exam(course_id: int, exam_id: str, user: UserSchema):
-    return exam_controller.handle_get_exam(course_id, exam_id, user.user_id)
+@app.get("/exams/{course_id}")
+def get_exam(course_id: int, user: UserSchema):
+    return exam_controller.handle_get_exam(course_id, user.user_id)
 
 
 @app.post("/exams/resolve")
