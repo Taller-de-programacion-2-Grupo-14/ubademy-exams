@@ -40,9 +40,12 @@ class ExamService:
         name = publish_info["exam_name"]
         course_id = publish_info["course_id"]
         user_id = publish_info["user_id"]
-        self._check_draft_exam_existance(course_id, name)
         if not self.validator.is_course_creator(course_id, user_id):
             raise IsNotTheCourseCreator
+        self._check_draft_exam_existance(course_id, name)
+        exams = len(self.db.get_exams(course_id, False))
+        if self.validator.exams_limit_reached(exams, course_id, user_id):
+            raise ExamsLimitReached
         self.db.publish_exam(name, course_id)
 
     def get_exams(self, course_id, user_id, name):
