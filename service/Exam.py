@@ -129,13 +129,13 @@ class ExamService:
             raise ExamDoesNotExist
 
     def getExamsNotDone(self, userId, courseId):
-        courseExams = self.db.get_exams(userId, False)
+        courseExams = self.db.get_exams(courseId, False)
         userDone = self.db.get_resolutions(userId, courseId)
         exams, done = {}, set()
         for v in userDone:
             done.add(v.get('name'))
         for v in courseExams:
             title = v.get('title')
-            if title and title in done:
+            if title and title not in done:
                 exams.update({v['title']: v})
         return exams
