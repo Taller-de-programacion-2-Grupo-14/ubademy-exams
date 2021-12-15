@@ -84,3 +84,7 @@ class MongoDB:
     def get_course_status(self, course_id, status):
         key = {"course": course_id, 'status': status}
         return list(self.db.exams.find(key))
+
+    def get_resolutions(self, user_id, course_id):
+        key = _get_key_resolution(None, user_id, course_id)
+        return self.db.responses.find(key)
