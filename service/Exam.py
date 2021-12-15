@@ -61,7 +61,7 @@ class ExamService:
         student = self.validator.is_student(course_id, user_id)
         if not grader and not student:
             raise InvalidUserAction
-        exams = self.db.get_responses(None, course_id, user_id, grader)
+        exams = self.db.get_responses(None, user_id, course_id, grader)
         return exams
 
     def get_resolution(self, course_id, exam_id, student_id, user_id):
@@ -90,18 +90,18 @@ class ExamService:
     def get_exam(self, course_id, exam_name, user_id):
         student = self.validator.is_student(course_id, user_id)
         creator = self.validator.is_course_creator(course_id, user_id)
-        if not creator or not student:
+        if not creator and not student:
             raise InvalidUserAction
         exam = self.db.get_exam(exam_name, course_id, creator)
         if not exam:
             raise ExamDoesNotExist
         return exam
 
-    def complete_exam(self, answers):
-        answers = answers["answers"]
-        user_id = answers["user_id"]
-        course_id = answers["course_id"]
-        name = answers['name']
+    def complete_exam(self, resolution):
+        answers = resolution["answers"]
+        user_id = resolution["user_id"]
+        course_id = resolution["course_id"]
+        name = resolution['name']
         self._check_published_exam_existance(course_id, name)
         student = self.validator.is_student(course_id, user_id)
         if not student:

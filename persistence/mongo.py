@@ -71,7 +71,7 @@ class MongoDB:
         key = _get_key_resolution(name=name, user_id="", course_id=course_id)
         if not grader:
             key.update({'user_id': user_id})
-        return list(self.db.exams.find(key))
+        return list(self.db.responses.find(key, {'_id': 0}))
 
     def grade_exam(self, name, user_id, course_id, corrections, status):
         if not (name and user_id and course_id):
@@ -83,7 +83,7 @@ class MongoDB:
 
     def get_course_status(self, course_id, status):
         key = {"course": course_id, 'status': status}
-        return list(self.db.exams.find(key))
+        return list(self.db.exams.find(key, {'_id': 0}))
 
     def get_resolutions(self, user_id, course_id):
         key = _get_key_resolution(None, user_id, course_id)
