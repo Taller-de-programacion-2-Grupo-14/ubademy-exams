@@ -81,8 +81,8 @@ def get_exam(course_id: int, exam_name: str, user: UserSchema):
     return exam_controller.handle_get_exam(course_id, exam_name, user.user_id)
 
 
-@app.post("/exams/resolve")
-def resolve_exam(answers: InfoExamCompletitionSchema):
+@app.post("/exams/resolve/{course_id}")
+def resolve_exam(course_id: int, answers: InfoExamCompletitionSchema):
     return exam_controller.handle_resolve_exam(answers.dict())
 
 
