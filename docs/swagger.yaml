@@ -218,7 +218,7 @@ paths:
         '404':
           description: Course or student not found
 
-  '/exam/{course_id}':
+  '/exam/{course_id}/{exam_name}':
     'get':
       tags:
         - Exam
@@ -227,6 +227,10 @@ paths:
         - in: path
           name: course_id
           description: id del curso
+          required: true
+        - in: path
+          name: exam_name
+          description: nombre del examen, muy importante en los espacios poner %20
           required: true
         - in: header
           name: x-access-token
