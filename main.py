@@ -1,4 +1,3 @@
-import uvicorn
 import yaml
 from fastapi import FastAPI, Request, status
 from fastapi.encoders import jsonable_encoder
@@ -133,14 +132,9 @@ def handleUnknownException(request: Request, exc: Exception):
         content=jsonable_encoder(
             {
                 "message":
-                f"Unknown error: {type(exc).__name__} with message: \
+                    f"Unknown error: {type(exc).__name__} with message: \
                     {exc.args[0]}",
                 "status": status.HTTP_503_SERVICE_UNAVAILABLE,
             }
         ),
-    )
-
-
-# if __name__ == "__main__":
-#     uvicorn.run("main:app", port=8080, reload=True)
     )
