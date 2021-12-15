@@ -87,8 +87,4 @@ class MongoDB:
 
     def get_resolutions(self, user_id, course_id):
         key = _get_key_resolution(None, user_id, course_id)
-        return list(self.db.responses.find(key))
-
-    def get_resolutions(self, user_id, course_id):
-        key = _get_key_resolution(None, user_id, course_id)
         return list(self.db.responses.find(key, {'_id': 0}))
