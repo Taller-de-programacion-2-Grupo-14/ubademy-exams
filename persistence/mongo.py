@@ -82,5 +82,5 @@ class MongoDB:
         return response.acknowledged
 
     def get_course_status(self, course_id, status):
-        key = {"course_id": course_id, 'status': status}
+        key = {"course": course_id, 'status': status}
         return list(self.db.exams.find(key))

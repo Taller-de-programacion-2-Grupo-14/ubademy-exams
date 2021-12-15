@@ -47,7 +47,7 @@ def edit_exam(edit_exam_data: EditExamSchema):
 
 @app.post("/exams/publish")
 def publish_exam(publish_info: ExamPublishSchema):
-    return exam_controller.handle_publish_exam(publish_info)
+    return exam_controller.handle_publish_exam(publish_info.dict())
 
 
 @app.get("/exams/{course_id}")
@@ -143,4 +143,4 @@ def handleUnknownException(request: Request, exc: Exception):
 
 # if __name__ == "__main__":
 #     uvicorn.run("main:app", port=8080, reload=True)
-    )
+#   )
