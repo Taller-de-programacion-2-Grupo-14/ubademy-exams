@@ -43,7 +43,7 @@ class MongoDB:
             item.update({'course': course_id})
         if not creator:
             item.update({'status': 'published'})
-        exams = list(self.db.exams.find(item))
+        exams = list(self.db.exams.find(item, {'_id': 0}))
         return exams
 
     def publish_exam(self, name, course_id):
@@ -83,8 +83,8 @@ class MongoDB:
 
     def get_course_status(self, course_id, status):
         key = {"course_id": course_id, 'status': status}
-        return list(self.db.exams.find(key))
+        return list(self.db.exams.find(key, {'_id': 0}))
 
     def get_resolutions(self, user_id, course_id):
         key = _get_key_resolution(None, user_id, course_id)
-        return self.db.responses.find(key)
+        return list(self.db.responses.find(key, {'_id': 0}))
