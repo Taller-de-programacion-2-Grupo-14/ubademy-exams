@@ -71,14 +71,14 @@ class ExamService:
         exams = self.db.get_responses(None, user_id, course_id, grader)
         return exams
 
-    def get_resolution(self, course_id, exam_id, student_id, user_id):
-        self._check_published_exam_existance(course_id, exam_id)
+    def get_resolution(self, course_id, name, student_id, user_id):
+        self._check_published_exam_existance(course_id, name)
         grader = self.validator.is_grader(course_id, user_id)
         student = self.validator.is_student(course_id, user_id)
         student = student and (user_id == student_id)
         if not grader or not student:
             raise InvalidUserAction
-        exam_info = self.db.get_resolution(exam_id, student_id, course_id)
+        exam_info = self.db.get_resolution(name, student_id, course_id)
         return exam_info
 
     def grade_resolution(self, course_id, grade_resolution_data):
