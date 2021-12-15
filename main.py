@@ -16,7 +16,6 @@ from schemas.Schemas import (
     EditExamSchema
 )
 from service.Exam import ExamService
-import uvicorn
 
 
 def get_client():
@@ -61,7 +60,7 @@ def get_resolutions(course_id: int, user: UserSchema):
 
 
 @app.get("/resolution/{course_id}/{student_id}")
-def get_exam_correct(course_id: int, student_id: int,
+def get_resolution(course_id: int, student_id: int,
                      user: UserSchema):
     return exam_controller.handle_get_resolution(course_id,
                                                  student_id,
@@ -80,7 +79,7 @@ def get_exam(course_id: int, exam_name: str, user: UserSchema):
 
 @app.post("/exam/resolve")
 def resolve_exam(answers: InfoExamCompletitionSchema):
-    return exam_controller.handle_resolve_exam(answers)
+    return exam_controller.handle_resolve_exam(answers.dict())
 
 
 @app.get("/doc-yml")
@@ -138,7 +137,3 @@ def handleUnknownException(request: Request, exc: Exception):
             }
         ),
     )
-
-
-if __name__ == "__main__":
-    uvicorn.run("main:app", port=8080, reload=True)
