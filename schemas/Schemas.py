@@ -11,7 +11,6 @@ class CreateExamSchema(BaseModel):
 
 class EditExamSchema(BaseModel):
     id_course: int
-    exam_id: int
     name: str = Field(min_length=10, max_length=255)
     questions: List[str] = []
     user_id: int
