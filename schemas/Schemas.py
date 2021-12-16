@@ -18,11 +18,10 @@ class EditExamSchema(BaseModel):
 
 class GradeResolutionSchema(BaseModel):
     id_course: int
-    id_exam: int
     id_student: int
     id_questions: List[str] = []
     corrections: str = Field(min_length=0, max_length=255)
-    status: str = Field(min_length=8, max_length=11)
+    status: str = Field(min_length=2, max_length=11)
     user_id: int
     name: str
 

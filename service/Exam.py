@@ -3,7 +3,7 @@ from exceptions.ExamException import (
     ExamDoesNotExist,
     ExamsLimitReached,
     InvalidUserAction,
-    ExamAlreadyResolvedException
+    ExamAlreadyResolvedException, ResolutionDoesNotExists
 )
 from validator.ExamValidator import ExamValidator
 from persistence.mongo import MongoDB
@@ -89,10 +89,10 @@ class ExamService:
         status = grade_resolution_data["status"]
         user_id = grade_resolution_data["user_id"]
         name = grade_resolution_data["name"]
-        self._check_published_exam_existance(course_id, name)
         grader = self.validator.is_grader(course_id, user_id)
         if not grader:
             raise InvalidUserAction
+        self._check_resolution_exam(course_id, name, user_id)
         self.db.grade_exam(name, id_student, course_id, corrections, status)
 
     def get_exam(self, course_id, exam_name, user_id):
@@ -148,3 +148,7 @@ class ExamService:
             if title and title not in done:
                 exams.update({v['title']: v})
         return list(exams.values())
+
+    def _check_resolution_exam(self, course_id, name, user_id):
+        if not self.db.get_resolution(name, user_id, course_id):
+            raise ResolutionDoesNotExists

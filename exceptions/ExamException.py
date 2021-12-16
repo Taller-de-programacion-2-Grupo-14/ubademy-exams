@@ -41,3 +41,9 @@ class CourseNotFound(ExamException):
     def __init__(self):
         super().__init__(status.HTTP_400_BAD_REQUEST,
                          "Course could not be found")
+
+
+class ResolutionDoesNotExists(ExamException):
+    def __init__(self):
+        super().__init__(status.HTTP_404_NOT_FOUND,
+                         "The resolution does not exist")
