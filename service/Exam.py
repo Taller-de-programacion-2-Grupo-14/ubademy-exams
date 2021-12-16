@@ -79,7 +79,7 @@ class ExamService:
         grader = self.validator.is_grader(course_id, user_id)
         student = self.validator.is_student(course_id, user_id)
         student = student and (user_id == student_id)
-        if not grader or not student:
+        if not grader and not student:
             raise InvalidUserAction
         exam_info = self.db.get_resolution(name, student_id, course_id)
         return exam_info

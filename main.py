@@ -13,7 +13,7 @@ from schemas.Schemas import (
     UserSchema,
     InfoExamCompletitionSchema,
     ExamPublishSchema,
-    EditExamSchema
+    EditExamSchema, GetResolution
 )
 from service.Exam import ExamService
 from queryparams.query_params import ExamQueryParams
@@ -65,10 +65,10 @@ def get_resolutions(course_id: int, user: UserSchema):
 
 
 @app.get("/resolution/{course_id}/{student_id}")
-def get_resolution(course_id: int, student_id: int, user: UserSchema):
+def get_resolution(course_id: int, student_id: int, body: GetResolution):
     return exam_controller.handle_get_resolution(course_id,
                                                  student_id,
-                                                 user.user_id)
+                                                 body.user_id, body.exam_name)
 
 
 @app.patch("/resolution/grade/{course_id}/{student_id}")

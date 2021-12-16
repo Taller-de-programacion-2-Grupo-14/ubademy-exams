@@ -42,3 +42,8 @@ class ExamPublishSchema(BaseModel):
 
 class UserSchema(BaseModel):
     user_id: int
+
+
+class GetResolution(UserSchema):
+    user_id: int
+    exam_name: str
