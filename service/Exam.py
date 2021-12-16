@@ -75,7 +75,7 @@ class ExamService:
         exams = self.db.get_exams(course_id, False)
         for r in resolutions:
             for exam in exams:
-                if r["exam"] == exam["title"]:
+                if r.get("exam") == exam.get("title"):
                     r["questions"] = exam["questions"]
         return resolutions
 
@@ -126,7 +126,7 @@ class ExamService:
         drafts = self.db.get_course_status(course_id, "draft")
         existance = False
         for exam in drafts:
-            if exam["title"] == name:
+            if exam.get("title") == name:
                 existance = True
                 break
         if not existance:
@@ -147,7 +147,7 @@ class ExamService:
         user_done = self.db.get_resolutions(user_id, course_id)
         exams, done = [], set()
         for v in user_done:
-            done.add(v.get('name'))
+            done.add(v.get('exam'))
         for v in course_exams:
             title = v.get('title')
             if title and title not in done:
