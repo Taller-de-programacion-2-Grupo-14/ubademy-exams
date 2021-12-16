@@ -71,8 +71,13 @@ class ExamService:
         student = self.validator.is_student(course_id, user_id)
         if not grader and not student:
             raise InvalidUserAction
-        exams = self.db.get_responses(None, user_id, course_id, grader)
-        return exams
+        resolutions = self.db.get_responses(None, user_id, course_id, grader)
+        exams = self.db.get_exams(course_id, False)
+        for r in resolutions:
+            for exam in exams:
+                if r["name"] == exam["title"]:
+                    r["questions"] = exam["questions"]
+        return resolutions
 
     def get_resolution(self, course_id, name, student_id, user_id):
         self._check_published_exam_existance(course_id, name)
