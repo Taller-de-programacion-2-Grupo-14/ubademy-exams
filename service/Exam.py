@@ -145,14 +145,14 @@ class ExamService:
     def get_undone_exams(self, user_id, course_id):
         course_exams = self.db.get_exams(course_id, False)
         user_done = self.db.get_resolutions(user_id, course_id)
-        exams, done = {}, set()
+        exams, done = [], set()
         for v in user_done:
             done.add(v.get('name'))
         for v in course_exams:
             title = v.get('title')
             if title and title not in done:
-                exams.update({v['title']: v})
-        return list(exams.values())
+                exams.append(v)
+        return exams
 
     def _check_resolution_exam(self, course_id, name, user_id):
         if not self.db.get_resolution(name, user_id, course_id):
