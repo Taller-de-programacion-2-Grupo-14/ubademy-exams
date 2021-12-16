@@ -166,6 +166,13 @@ paths:
           name: x-access-token
           required: true
           description: token recibido de usuario
+      requestBody:
+        description: body para el get de una resolucion particular
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/getResolution'
 
       responses:
         '200':
@@ -424,7 +431,7 @@ components:
           description: Nombre del examen
         course_id:
           type: integer
-          descricption: id del curso
+          description: id del curso
     
     examInfo:
       type: object
@@ -457,3 +464,9 @@ components:
             type: string
           description: un array con las respuestas del alumno, también manteniendo el orden
           example: ["Algo verde que crece en el jardin", "No me acuerdo de ninguno"]
+    getResolution:
+      type: object
+      properties:
+        name:
+          type: string
+          description: titulo del examen
