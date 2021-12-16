@@ -70,7 +70,7 @@ class MongoDB:
     def get_responses(self, name, user_id, course_id, grader):
         key = _get_key_resolution(name=name, user_id="", course_id=course_id)
         if not grader:
-            key.update({'user_id': user_id})
+            key.update({'user': user_id})
         return list(self.db.responses.find(key, {'_id': 0}))
 
     def grade_exam(self, name, user_id, course_id, corrections, status):
