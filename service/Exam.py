@@ -92,7 +92,7 @@ class ExamService:
         grader = self.validator.is_grader(course_id, user_id)
         if not grader:
             raise InvalidUserAction
-        self._check_resolution_exam(course_id, name, user_id)
+        self._check_resolution_exam(course_id, name, id_student)
         self.db.grade_exam(name, id_student, course_id, corrections, status)
 
     def get_exam(self, course_id, exam_name, user_id):
