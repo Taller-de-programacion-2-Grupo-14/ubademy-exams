@@ -33,7 +33,7 @@ class ExamController:
     def handle_get_resolution(self, course_id, student_id, user_id, exam_title):
         exam_info = self.service.get_resolution(course_id, exam_title,
                                                 student_id, user_id)
-        return self._get_list_response(exam_info)
+        return exam_info if exam_info is not None else {}
 
     def handle_grade_resolution(self, course_id, grade_resolution_data):
         self.service.grade_resolution(course_id, grade_resolution_data)
