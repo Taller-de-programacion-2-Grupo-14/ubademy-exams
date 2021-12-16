@@ -48,7 +48,7 @@ class ExamService:
             raise ExamsLimitReached
         self.db.publish_exam(name, course_id)
 
-    def get_exams(self, course_id, user_id, name):
+    def get_exams(self, course_id, user_id):
         creator = self.validator.is_course_creator(course_id, user_id)
         student = self.validator.is_student(course_id, user_id)
         collaborator = self.validator.is_course_collaborator(course_id,
