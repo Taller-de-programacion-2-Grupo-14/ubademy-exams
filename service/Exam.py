@@ -75,7 +75,7 @@ class ExamService:
         exams = self.db.get_exams(course_id, False)
         for r in resolutions:
             for exam in exams:
-                if r["name"] == exam["title"]:
+                if r["exam"] == exam["title"]:
                     r["questions"] = exam["questions"]
         return resolutions
 
