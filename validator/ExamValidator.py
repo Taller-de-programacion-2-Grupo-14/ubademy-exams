@@ -12,8 +12,7 @@ class ExamValidator:
     def get_course_data(self, course_id, user_id):
         try:
             data = self.courses.get_course(course_id, user_id)
-        except HTTPError as e:
-            print(f'exception found: {e.response.text}')
+        except HTTPError:
             raise CourseNotFound()
         return data
 

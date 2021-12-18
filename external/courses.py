@@ -11,7 +11,7 @@ class Courses:
         response = requests.request(
             method="get",
             url=url,
-            data={"user_id": user_id}
+            json={"user_id": user_id}
         )
         response.raise_for_status()
         return response.json()
