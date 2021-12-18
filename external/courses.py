@@ -14,5 +14,5 @@ class Courses:
             json={"user_id": user_id}
         )
         response.raise_for_status()
-        print(response.json())
-        return response.json()
+        print(response.json().get("message"))
+        return response.json().get("message")
