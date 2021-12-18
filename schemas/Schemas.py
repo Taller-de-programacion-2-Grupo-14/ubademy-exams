@@ -1,5 +1,8 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from typing import List
+from exceptions.ExamException import InvalidStatusType
+
+STATUS_TYPES = {"desaprobado": "fail", "aprobado": "pass"}
 
 
 class CreateExamSchema(BaseModel):
@@ -24,6 +27,13 @@ class GradeResolutionSchema(BaseModel):
     status: str = Field(min_length=2, max_length=11)
     user_id: int
     name: str
+
+    @validator("status")
+    def valid_statusType(cls, status):
+        status = status.lower()
+        if status not in STATUS_TYPES:
+            raise InvalidStatusType(STATUS_TYPES)
+        return STATUS_TYPES.get(status)
 
 
 class InfoExamCompletitionSchema(BaseModel):

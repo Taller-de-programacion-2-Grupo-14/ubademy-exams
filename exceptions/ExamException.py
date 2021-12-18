@@ -47,3 +47,12 @@ class ResolutionDoesNotExists(ExamException):
     def __init__(self):
         super().__init__(status.HTTP_404_NOT_FOUND,
                          "The resolution does not exist")
+
+
+class InvalidStatusType(ExamException):
+    def __init__(self, status_types):
+        super().__init__(
+            status.HTTP_400_BAD_REQUEST,
+            f"The status must be of one of the "
+            f"following types: {', '.join(status_types)} ",
+        )

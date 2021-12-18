@@ -37,3 +37,9 @@ class ExamValidator:
         collab = self.is_course_collaborator(course_id, user_id)
         creator = self.is_course_creator(course_id, user_id)
         return collab or creator
+
+    def notify_course(self, course_id, user_id, resolutions):
+        grades = []
+        for r in resolutions:
+            grades.append(r.get("status"))
+        self.course.notify(course_id, user_id, grades)

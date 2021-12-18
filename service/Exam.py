@@ -99,6 +99,8 @@ class ExamService:
             raise InvalidUserAction
         self._check_resolution_exam(course_id, name, id_student)
         self.db.grade_exam(name, id_student, course_id, corrections, status)
+        resolutions = self.get_resolutions(course_id, user_id)
+        self.validator.notify_course(course_id, user_id, resolutions)
 
     def get_exam(self, course_id, exam_name, user_id):
         student = self.validator.is_student(course_id, user_id)
