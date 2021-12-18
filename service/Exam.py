@@ -60,7 +60,10 @@ class ExamService:
         if student:
             exams = self.get_undone_exams(user_id, course_id)
         if collaborator:
-            exams = self.db.get_course_status(course_id, "published")
+            if name:
+                exams = self.db.get_exam(name, course_id, creator)
+            else:
+                exams = self.db.get_course_status(course_id, "published")
         if creator:
             if name:
                 exams = [self.db.get_exam(name, course_id, creator)]
