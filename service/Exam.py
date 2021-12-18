@@ -69,7 +69,7 @@ class ExamService:
                 exams = [self.db.get_exam(name, course_id, creator)]
             else:
                 exams = self.db.get_exams(course_id, creator)
-            if status:
+            if status and exams:
                 status = status.lower()
                 exams = [e for e in exams if e.get("status") == status]
         return exams
