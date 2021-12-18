@@ -16,6 +16,7 @@ from schemas.Schemas import (
     EditExamSchema, GetResolution
 )
 from service.Exam import ExamService
+from queryparams.query_params import ExamQueryParams
 
 
 def get_client():
@@ -51,9 +52,11 @@ def publish_exam(publish_info: ExamPublishSchema):
 
 
 @app.get("/exams/{course_id}")
-def get_exams(course_id: int, user: UserSchema):
+def get_exams(course_id: int, user: UserSchema,
+              filter: ExamQueryParams = Depends(ExamQueryParams)):
     return exam_controller.handle_get_exams(course_id,
-                                            user.user_id)
+                                            user.user_id,
+                                            filter.name)
 
 
 @app.get("/resolutions/{course_id}")

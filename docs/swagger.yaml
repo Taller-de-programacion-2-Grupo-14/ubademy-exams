@@ -94,6 +94,10 @@ paths:
         - Exam
       description: Obtengo una lista con todos los examenes del curso en caso de ser el creador(incluidos borrador), y los que están publicados y no he realizado si soy alumno
       parameters:
+        - in: query
+          name: name
+          description: 'Nombre del examen para filtrar'
+          example: 'Examen de plantitas'
         - in: path
           required: true
           name: course_id
