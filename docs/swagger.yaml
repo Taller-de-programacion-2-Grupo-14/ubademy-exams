@@ -98,6 +98,10 @@ paths:
           name: name
           description: 'Nombre del examen para filtrar'
           example: 'Examen de plantitas'
+        - in: query
+          name: status
+          description: 'Estado del examen, ESTADOS VALIDOS SON DRAFT Y PUBLISHED'
+          example: 'draft'
         - in: path
           required: true
           name: course_id

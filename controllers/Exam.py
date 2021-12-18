@@ -21,8 +21,8 @@ class ExamController:
         return {"message": "Exam published successfully",
                 "status": status.HTTP_200_OK}
 
-    def handle_get_exams(self, course_id, user_id, name):
-        exams = self.service.get_exams(course_id, user_id, name)
+    def handle_get_exams(self, course_id, user_id, filters):
+        exams = self.service.get_exams(course_id, user_id, filters)
         return self._get_list_response(exams)
 
     def handle_get_resolutions(self, course_id, user_id):
