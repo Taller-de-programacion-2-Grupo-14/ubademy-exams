@@ -72,8 +72,7 @@ class ExamService:
             if status and exams:
                 status = status.lower()
                 exams = [e for e in exams if e.get("status") == status]
-        print(exams)
-        return exams
+        return exams if exams != [None] else []
 
     def get_resolutions(self, course_id, user_id):
         grader = self.validator.is_grader(course_id, user_id)
