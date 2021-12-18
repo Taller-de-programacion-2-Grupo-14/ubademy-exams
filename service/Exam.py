@@ -72,6 +72,7 @@ class ExamService:
             if status and exams:
                 status = status.lower()
                 exams = [e for e in exams if e.get("status") == status]
+        print(exams)
         return exams
 
     def get_resolutions(self, course_id, user_id):
