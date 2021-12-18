@@ -67,7 +67,8 @@ class ExamService:
             else:
                 exams = self.db.get_exams(course_id, creator)
             if status:
-                exams = [exam for exam in exams if exam["status"] == status]
+                status = status.lower()
+                exams = [e for e in exams if e.get("status") == status]
         return exams
 
     def get_resolutions(self, course_id, user_id):
@@ -86,7 +87,8 @@ class ExamService:
     def get_resolution(self, course_id, name, student_id, user_id):
         self._check_published_exam_existance(course_id, name)
         grader = self.validator.is_grader(course_id, user_id)
-        student = (user_id == student_id) and self.validator.is_student(course_id, user_id)
+        is_student = self.validator.is_student(course_id, user_id)
+        student = (user_id == student_id) and is_student
         if not grader and not student:
             raise InvalidUserAction
         exam_info = self.db.get_resolution(name, student_id, course_id)

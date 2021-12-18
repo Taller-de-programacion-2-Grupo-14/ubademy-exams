@@ -28,7 +28,8 @@ class MongoDB:
         key = _get_exam_key(name, course_id)
         response = self.db.exams.update_one(key,
                                             {'$set': {'questions': questions,
-                                                      'name': name}}, upsert=True)
+                                                      'name': name}},
+                                            upsert=True)
         return response.acknowledged
 
     def get_exam(self, name, course_id, creator):
@@ -77,7 +78,9 @@ class MongoDB:
         if not (name and user_id and course_id):
             raise Exception
         correction = {'correction': corrections, 'status': status}
-        response = self.db.responses.update_one(_get_key_resolution(name, user_id, course_id),
+        response = self.db.responses.update_one(_get_key_resolution(name,
+                                                                    user_id,
+                                                                    course_id),
                                                 {'$set': correction})
         return response.acknowledged
 

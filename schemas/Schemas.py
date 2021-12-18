@@ -30,7 +30,7 @@ class GradeResolutionSchema(BaseModel):
 
     @validator("status")
     def valid_statusType(cls, status):
-        status = status.lower()
+        status = status
         if status not in STATUS_TYPES:
             raise InvalidStatusType(STATUS_TYPES)
         return STATUS_TYPES.get(status)
