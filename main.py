@@ -13,7 +13,8 @@ from schemas.Schemas import (
     UserSchema,
     InfoExamCompletitionSchema,
     ExamPublishSchema,
-    EditExamSchema, GetResolution
+    EditExamSchema,
+    GetResolution,
 )
 from service.Exam import ExamService
 from queryparams.query_params import ExamQueryParams
@@ -22,11 +23,13 @@ from queryparams.query_params import ExamQueryParams
 def get_client():
     import pymongo
     import os
-    env = os.getenv('ENVIROMENT')
-    env = env if env else 'test'
+
+    env = os.getenv("ENVIROMENT")
+    env = env if env else "test"
     url = f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0"
     client = pymongo.MongoClient(
-                url+".39prr.mongodb.net/exams?retryWrites=true&w=majority")
+        url + ".39prr.mongodb.net/exams?retryWrites=true&w=majority"
+    )
     return client[env]
 
 
@@ -52,11 +55,10 @@ def publish_exam(publish_info: ExamPublishSchema):
 
 
 @app.get("/exams/{course_id}")
-def get_exams(course_id: int, user: UserSchema,
-              filter: ExamQueryParams = Depends(ExamQueryParams)):
-    return exam_controller.handle_get_exams(course_id,
-                                            user.user_id,
-                                            filter.data)
+def get_exams(
+    course_id: int, user: UserSchema, filter: ExamQueryParams = Depends(ExamQueryParams)
+):
+    return exam_controller.handle_get_exams(course_id, user.user_id, filter.data)
 
 
 @app.get("/resolutions/{course_id}")
@@ -66,16 +68,16 @@ def get_resolutions(course_id: int, user: UserSchema):
 
 @app.get("/resolution/{course_id}/{student_id}")
 def get_resolution(course_id: int, student_id: int, body: GetResolution):
-    return exam_controller.handle_get_resolution(course_id,
-                                                 student_id,
-                                                 body.user_id, body.exam_name)
+    return exam_controller.handle_get_resolution(
+        course_id, student_id, body.user_id, body.exam_name
+    )
 
 
 @app.patch("/resolution/grade/{course_id}/{student_id}")
-def grade_resolution(course_id: int,
-                     grade_resolution_inf: GradeResolutionSchema):
-    return exam_controller.handle_grade_resolution(course_id,
-                                                   grade_resolution_inf.dict())
+def grade_resolution(course_id: int, grade_resolution_inf: GradeResolutionSchema):
+    return exam_controller.handle_grade_resolution(
+        course_id, grade_resolution_inf.dict()
+    )
 
 
 @app.get("/exam/{course_id}/{exam_name}")
@@ -105,8 +107,7 @@ async def add_process_time_header(request: Request, call_next):
 
 
 @app.exception_handler(RequestValidationError)
-def validation_exception_handler(request: Request,
-                                 exc: RequestValidationError):
+def validation_exception_handler(request: Request, exc: RequestValidationError):
     errors = exc.errors()
     fields = []
     for err in errors:
@@ -126,8 +127,7 @@ def validation_exception_handler(request: Request,
 def handle_course_exception(request: Request, exc: ExamException):
     return JSONResponse(
         status_code=exc.status_code,
-        content=jsonable_encoder({"message": exc.message,
-                                  "status": exc.status_code}),
+        content=jsonable_encoder({"message": exc.message, "status": exc.status_code}),
     )
 
 
@@ -139,8 +139,7 @@ def handleUnknownException(request: Request, exc: Exception):
         status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
         content=jsonable_encoder(
             {
-                "message":
-                    f"Unknown error: {error} with message: {msg}",
+                "message": f"Unknown error: {error} with message: {msg}",
                 "status": status.HTTP_503_SERVICE_UNAVAILABLE,
             }
         ),

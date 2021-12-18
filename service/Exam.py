@@ -3,7 +3,8 @@ from exceptions.ExamException import (
     ExamDoesNotExist,
     ExamsLimitReached,
     InvalidUserAction,
-    ExamAlreadyResolvedException, ResolutionDoesNotExists
+    ExamAlreadyResolvedException,
+    ResolutionDoesNotExists,
 )
 from validator.ExamValidator import ExamValidator
 from persistence.mongo import MongoDB
@@ -51,8 +52,7 @@ class ExamService:
     def get_exams(self, course_id, user_id, filters):
         creator = self.validator.is_course_creator(course_id, user_id)
         student = self.validator.is_student(course_id, user_id)
-        collaborator = self.validator.is_course_collaborator(course_id,
-                                                             user_id)
+        collaborator = self.validator.is_course_collaborator(course_id, user_id)
         name = filters.get("name")
         status = filters.get("status")
         if not creator and not student and not collaborator:
@@ -121,7 +121,7 @@ class ExamService:
     def complete_exam(self, course_id, resolution):
         answers = resolution["answers"]
         user_id = resolution["user_id"]
-        name = resolution['name']
+        name = resolution["name"]
         self._check_published_exam_existance(course_id, name)
         student = self.validator.is_student(course_id, user_id)
         if not student:
@@ -155,9 +155,9 @@ class ExamService:
         user_done = self.db.get_resolutions(user_id, course_id)
         exams, done = [], set()
         for v in user_done:
-            done.add(v.get('exam'))
+            done.add(v.get("exam"))
         for v in course_exams:
-            title = v.get('title')
+            title = v.get("title")
             if title and title not in done:
                 exams.append(v)
         return exams

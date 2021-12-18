@@ -36,8 +36,7 @@ class DB:
         self.db[f"exam_{exam_id}_item"]["status"] = "published"
 
     def get_exams(self, course_id, user_id, grader):
-        ids_published = \
-                    self.exam_courses_db[f"course_{course_id}_exams_published"]
+        ids_published = self.exam_courses_db[f"course_{course_id}_exams_published"]
         exam_ids = []
         if grader:
             ids_draft = self.exam_courses_db[f"course_{course_id}_exams_draft"]
@@ -120,8 +119,7 @@ class DB:
             return {}
         if id_student not in self.answers_db[f"exam_{id_exam}"]:
             return {}
-        self.answers_db[f"exam_{id_exam}_{id_student}"]["corrections"] = \
-            corrections
+        self.answers_db[f"exam_{id_exam}_{id_student}"]["corrections"] = corrections
         self.answers_db[f"exam_{id_exam}_{id_student}"]["status"] = status
 
     def get_exam(self, course_id, exam_id, creator):
