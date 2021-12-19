@@ -22,8 +22,8 @@ class ExamController:
         exams = self.service.get_exams(course_id, user_id, filters)
         return self._get_list_response(exams)
 
-    def handle_get_resolutions(self, course_id, user_id):
-        resolutions = self.service.get_resolutions(course_id, user_id)
+    def handle_get_resolutions(self, course_id, user_id, status):
+        resolutions = self.service.get_resolutions(course_id, user_id, status)
         return self._get_list_response(resolutions)
 
     def handle_get_resolution(self, course_id, student_id, user_id, name):
