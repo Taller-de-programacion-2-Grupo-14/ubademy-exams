@@ -13,9 +13,7 @@ class ExamQueryParams:
 
 
 class ResolutionQueryParams:
-    def __init__(
-        self, status: Optional[str] = Query(None)
-    ):
+    def __init__(self, status: Optional[str] = Query(None)):
         self.data = {"status": status}
 
     def get_status(self):

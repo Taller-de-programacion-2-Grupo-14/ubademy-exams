@@ -14,7 +14,7 @@ from schemas.Schemas import (
     InfoExamCompletitionSchema,
     ExamPublishSchema,
     EditExamSchema,
-    GetResolution
+    GetResolution,
 )
 from service.Exam import ExamService
 from queryparams.query_params import ExamQueryParams, ResolutionQueryParams
@@ -62,10 +62,14 @@ def get_exams(
 
 
 @app.get("/resolutions/{course_id}")
-def get_resolutions(course_id: int, user: UserSchema,
-                    filter: ResolutionQueryParams = Depends(ResolutionQueryParams)):
-    return exam_controller.handle_get_resolutions(course_id, user.user_id,
-                                                  filter.get_status())
+def get_resolutions(
+    course_id: int,
+    user: UserSchema,
+    filter: ResolutionQueryParams = Depends(ResolutionQueryParams),
+):
+    return exam_controller.handle_get_resolutions(
+        course_id, user.user_id, filter.get_status()
+    )
 
 
 @app.get("/resolution/{course_id}/{student_id}")
