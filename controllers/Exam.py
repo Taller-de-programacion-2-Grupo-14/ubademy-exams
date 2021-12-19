@@ -46,4 +46,8 @@ class ExamController:
         return {"message": array, "status": self._get_list_status(array)}
 
     def _get_list_status(self, array):
+        if len(array):
+            print(f"{array} Voy a devolver un 200")
+        else:
+            print(f"{array} Voy a devolver un 204")
         return status.HTTP_200_OK if len(array) else status.HTTP_204_NO_CONTENT
