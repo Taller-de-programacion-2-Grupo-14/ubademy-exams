@@ -1,0 +1,480 @@
+openapi: "3.0.0"
+servers:
+  - url: 'https://ubademy-14-prod.herokuapp.com/'
+info:
+  description: Exams API encargada de todas las operaciones relacionadas a examenes
+  version: 0.2.0
+  title: Exams
+
+tags:
+  - name: Exam
+    description: Operaciones sobre examenes
+
+paths:
+  '/exams/create':
+    'post':
+      tags:
+        - Exam
+      description: Crea un examen nuevo
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido del usuario que desea crear el examen
+      requestBody:
+        description: body para la creacion del examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examCreate'
+      responses:
+        '200':
+          description: Examen creado correctamente
+        '400':
+          description: La pregunta o el título no pueden estar vacíos/son inválidos
+        '403':
+          description: Invalid user action
+        '409':
+          description: Exams quantity limit reached
+
+  '/exams/edit':
+    'put':
+      tags:
+        - Exam
+      description: Edita un examen que aun no fue publicado
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido del usuario que desea crear el examen
+      requestBody:
+        description: body para la edicion del examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examCreate'
+      responses:
+        '200':
+          description: Examen editado correctamente
+        '400':
+          description: Bad request
+        '403':
+          description: Invalid user action
+
+  '/exams/publish':
+    'post':
+      tags:
+        - Exam
+      description: Publica un examen que está como borrador
+      parameters:
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido del usuario que desea publicar el examen
+      requestBody:
+        description: body para la publicacion del examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examPublish'
+      responses:
+        '200':
+          description: Examen publicado correctamente
+        '400':
+          description: Bad request
+        '403':
+          description: Invalid user action
+
+  '/exams/{course_id}':
+    'get':
+      tags:
+        - Exam
+      description: Obtengo una lista con todos los examenes del curso en caso de ser el creador(incluidos borrador), y los que están publicados y no he realizado si soy alumno
+      parameters:
+        - in: query
+          name: name
+          description: 'Nombre del examen para filtrar'
+          example: 'Examen de plantitas'
+        - in: query
+          name: status
+          description: 'Estado del examen, ESTADOS VALIDOS SON DRAFT Y PUBLISHED'
+          example: 'draft'
+        - in: path
+          required: true
+          name: course_id
+          description: id del curso
+          example: 5
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+
+      responses:
+        '200':
+          description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/infoCourseExams'
+        '204':
+          description: No content
+        '400':
+          description: Bad Request
+        '403':
+          description: Invalid user action
+          
+  '/resolutions/{course_id}':
+    'get':
+      tags:
+        - Exam
+      description: Obtengo una lista con todas las resoluciones del curso, a corregir en caso de ser creador o colaborador, propias en caso de ser alumno
+      parameters:
+        - in: path
+          required: true
+          name: course_id
+          description: id del curso
+          example: 5
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+
+      responses:
+        '200':
+          description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/infoResolutions'
+        '204':
+          description: No content
+        '400':
+          description: Bad Request
+        '403':
+          description: Invalid user action
+  
+  '/resolution/{course_id}/{student_id}':
+    'get':
+      tags:
+        - Exam
+      description: Obtengo detalle de la resolucion de un examen
+      parameters:
+        - in: path
+          name: course_id
+          description: id del curso
+          required: true
+        - in: path
+          required: true
+          name: student_id
+          description: id del estudiante
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      requestBody:
+        description: body para el get de una resolucion particular
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/getResolution'
+
+      responses:
+        '200':
+          description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/infoExamToCorrect'
+        '204':
+          description: No content
+        '400':
+          description: Bad Request
+        '403':
+          description: Invalid user action
+        '404':
+          description: Course or student not found
+  '/resolution/grade/{course_id}/{student_id}':
+    'patch':
+      tags:
+        - Exam
+      description: Envio correcciones de un examen
+      parameters:
+        - in: path
+          name: course_id
+          description: id del curso
+          required: true
+        - in: path
+          name: student_id
+          description: id del alumno que realizo el examen
+          required: true
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      requestBody:
+        description: Body para corregir el examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/infoExamCorrected'
+
+      responses:
+        '204':
+          description: No content
+        '400':
+          description: Bad Request, campos invalidos
+        '403':
+          description: Invalid user action
+        '404':
+          description: Course or student not found
+
+  '/exam/{course_id}/{exam_name}':
+    'get':
+      tags:
+        - Exam
+      description: Obtiene la información del examen indicado por el id, para ser completado por el alumno
+      parameters:
+        - in: path
+          name: course_id
+          description: id del curso
+          required: true
+        - in: path
+          name: exam_name
+          description: nombre del examen, muy importante en los espacios poner %20
+          required: true
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      responses:
+        '200':
+          description: Todo okay
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/examInfo'
+        '204':
+          description: No content
+        '400':
+          description: Bad Request
+        '404':
+          description: Curso no existe
+        '403':
+          description: Invalid user action 
+  '/exams/resolve/{course_id}':
+    'post':
+      tags:
+        - Exam
+      description: Completo un examen
+      parameters:
+        - in: path
+          name: course_id
+          description: id del curso
+          required: true
+        - in: header
+          name: x-access-token
+          required: true
+          description: token recibido de usuario
+      requestBody:
+        description: Body para completar el examen
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/examCompletionInfo'
+      responses:
+        '200':
+          description: Todo okay
+        '400':
+          description: Bad Request
+        '404':
+          description: Curso no existe
+        '403':
+          description: Invalid user action 
+
+components:
+  schemas:
+    examCreate:
+      type: object
+      required:
+        - id_course
+        - name
+        - questions
+      properties:
+        id_course:
+          type: integer
+          example: 8
+        name:
+          type: string
+          example: 'Examen piloto sobre conocimientos de python3'
+        questions:
+          type: array
+          items:
+            type: string
+          description: Un array con las preguntas que va a tener el examen
+          example: ['¿Existe la expresión i++ en python?', 'Nombre alguna funcionalidad que este en Python3 y no en Python 2.7']
+
+    infoCourseExams:
+      type: object
+      properties:
+        exam_name:
+          type: string
+          example: 'Examen de conocimiento general'
+        questions:
+          type: array
+          items:
+            type: string
+          description: Un array con las preguntas que tiene el examen 
+          example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
+        status:
+          type: string
+          description: Estado del examen, puede ser published o draft
+          example: "draft"
+          
+    infoResolutions:
+      type: object
+      properties:
+        id_student:
+          type: integer
+          description: Id del alumno que completo dicha resolucion
+        exam_name:
+          type: string
+          example: 'Examen de biologia'
+        questions:
+          type: array
+          items:
+            type: string
+          description: Un array con las preguntas del examen
+        answers:
+          type: array
+          items:
+            type: string
+          description: Un array con las respuestas del alumno
+        correction:
+          type: string
+          description: Correccion de la resolucion en caso de estar corregida
+          examlpe: ""
+        status:
+          type: string
+          description: Estado de la resolucion. Las opciones son passed, failed y nc para no corregido
+          example: 'nc'
+  
+    infoExamToCorrect:
+      type: object
+      properties:
+        id_course:
+          type: integer
+          example: 8
+        name:
+          type: string
+          description: nombre del examen
+        id_student:
+          type: integer
+          example: 8
+        questions:
+          type: array
+          items:
+            type: string
+          description: un array con las preguntas del examen con el orden
+          example: ['¿Quien descubrio america?', '¿Cuanto es 2+2?']
+        answers:
+          type: array
+          items:
+            type: string  
+          description: un array con las respuestas realizadas por el alumno, con el orden
+          example: ["Carlos Saul Menem", "85"]
+        status:
+          type: string
+          description: estado del examen, not corrected
+          example: not corrected   
+
+    infoExamCorrected:
+      type: object
+      properties:
+        name:
+          type: string
+          description: nombre del examen
+        id_course:
+          type: integer
+          example: 8
+        id_student:
+          type: integer
+          example: 8
+        corrections:
+          type: string
+          description: la correccion realizada 
+          example: 'El examen en temrinos generales, esta bastante bien, se podria haber desarrollado un poco mas en la ultima pregunta'
+        status:
+          type: string
+          description: estado del examen, las opciones son failed o passed
+          example: 'failed'   
+
+    toDoExamsInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Primer examen del curso de jardineria'
+        id_course:
+          type: integer
+          description: id del curso
+          example: 5
+        questions: 
+          type: array
+          items:
+            type: string
+          description: Un array con las preguntas del examen
+          example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
+    
+    examPublish:
+      type: object
+      properties:
+        exam_name:
+          type: string
+          description: Nombre del examen
+        course_id:
+          type: integer
+          description: id del curso
+    
+    examInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'Primer examen del curso de jardineria'
+        questions: 
+          type: array
+          items:
+            type: string
+          description: Un array con las preguntas del examen
+          example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
+    
+    examCompletionInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          description: nombre del examen
+        questions: 
+          type: array
+          items:
+            type: string
+          description: Un array con las preguntas del examen
+          example: ["¿Qué es una planta?", "Describa tres metodos de jardineria adquiridos a lo largo del curso"]
+        answers:
+          type: array
+          items:
+            type: string
+          description: un array con las respuestas del alumno, también manteniendo el orden
+          example: ["Algo verde que crece en el jardin", "No me acuerdo de ninguno"]
+    getResolution:
+      type: object
+      properties:
+        name:
+          type: string
+          description: titulo del examen

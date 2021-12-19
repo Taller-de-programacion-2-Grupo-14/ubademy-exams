@@ -8,7 +8,8 @@ services:
       context: ./
     container_name: exam
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@pg:5432/test_db
+      - COURSES_HOSTNAME=https://ubademy-14-cursos.herokuapp.com/ 
+      - UBADEMY_PASSWORD=
     ports:
       - "8080:8080"
     networks:
