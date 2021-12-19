@@ -55,6 +55,8 @@ class ExamService:
         collaborator = self.validator.is_course_collaborator(course_id, user_id)
         if not creator and not student and not collaborator:
             raise InvalidUserAction
+        print(f"hola soy el, user_id: {user_id} del course_id: {course_id}")
+        print(f"Soy creator? {creator}")
         name = filters.get("name")
         status = filters.get("status")
         if student:
@@ -69,9 +71,11 @@ class ExamService:
                 exams = [self.db.get_exam(name, course_id, creator)]
             else:
                 exams = self.db.get_exams(course_id, creator)
+                print(f"en exams hay: {exams}")
             if status and exams:
                 status = status.lower()
                 exams = [e for e in exams if e.get("status") == status]
+        print(f"justo antes del return en exams hay: {exams}")
         return exams if exams != [None] else []
 
     def get_resolutions(self, course_id, user_id, status):
