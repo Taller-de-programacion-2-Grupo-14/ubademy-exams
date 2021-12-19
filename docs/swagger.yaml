@@ -96,7 +96,7 @@ paths:
       parameters:
         - in: query
           name: name
-          description: 'Nombre del examen para filtrar'
+          description: Nombre del examen para filtrar
           example: 'Examen de plantitas'
         - in: query
           name: status
@@ -132,6 +132,10 @@ paths:
         - Exam
       description: Obtengo una lista con todas las resoluciones del curso, a corregir en caso de ser creador o colaborador, propias en caso de ser alumno
       parameters:
+        - in: query
+          name: status
+          description: Estado para filtrar resoluciones UNICOS ESTADOS VALIDOS SON FAIL O PASS
+          example: 'fail'
         - in: path
           required: true
           name: course_id
