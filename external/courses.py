@@ -7,8 +7,9 @@ class Courses:
         self.host = os.environ.get("COURSES_HOSTNAME")
 
     def get_course(self, course_id: int, user_id: int):
-        url = f"{self.host}courses/{course_id}/view"
-        response = requests.request(method="get", url=url, json={"user_id": user_id})
+        url = f"{self.host}courses/summary_information"
+        data = {"user_id": user_id, "course_id": course_id}
+        response = requests.request(method="get", url=url, json=data)
         response.raise_for_status()
         return response.json().get("message")
 
