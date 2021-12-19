@@ -58,7 +58,7 @@ def publish_exam(publish_info: ExamPublishSchema):
 def get_exams(
     course_id: int, user: UserSchema, filter: ExamQueryParams = Depends(ExamQueryParams)
 ):
-    return exam_controller.handle_get_exams(course_id, user.user_id, filter.data)
+    return exam_controller.handle_get_exams(course_id, user.user_id, filter.get_data())
 
 
 @app.get("/resolutions/{course_id}")
