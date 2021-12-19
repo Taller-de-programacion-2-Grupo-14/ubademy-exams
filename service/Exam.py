@@ -53,10 +53,10 @@ class ExamService:
         creator = self.validator.is_course_creator(course_id, user_id)
         student = self.validator.is_student(course_id, user_id)
         collaborator = self.validator.is_course_collaborator(course_id, user_id)
-        name = filters.get("name")
-        status = filters.get("status")
         if not creator and not student and not collaborator:
             raise InvalidUserAction
+        name = filters.get("name")
+        status = filters.get("status")
         if student:
             exams = self.get_undone_exams(user_id, course_id)
         if collaborator:
