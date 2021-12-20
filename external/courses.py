@@ -14,7 +14,7 @@ class Courses:
         return response.json().get("message")
 
     def notify(self, course_id, user_id, grades):
-        url = f"{self.host}courses/update_subscriber_status"
+        url = f"{self.host}courses/update/subscriber_status"
         data = {"course_id": course_id, "user_id": user_id, "grades": grades}
         response = requests.request(method="patch", url=url, json=data)
         response.raise_for_status()
