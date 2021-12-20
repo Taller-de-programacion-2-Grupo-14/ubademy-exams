@@ -42,4 +42,4 @@ class ExamValidator:
         grades = []
         for r in resolutions:
             grades.append(r.get("status"))
-        self.course.notify(course_id, user_id, grades)
+        self.courses.notify(course_id, user_id, grades)
