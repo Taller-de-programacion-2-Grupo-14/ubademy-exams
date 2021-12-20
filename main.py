@@ -3,6 +3,8 @@ from fastapi import FastAPI, Request, status, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+import pymongo
+import os
 
 import persistence.mongo
 from controllers.Exam import ExamController
@@ -21,9 +23,6 @@ from queryparams.query_params import ExamQueryParams, ResolutionQueryParams
 
 
 def get_client():
-    import pymongo
-    import os
-
     env = os.getenv("ENVIROMENT")
     env = env if env else "test"
     url = f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0"
