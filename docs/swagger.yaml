@@ -365,7 +365,7 @@ components:
           examlpe: ""
         status:
           type: string
-          description: Estado de la resolucion. Las opciones son aprobado y desaprobado nc para no corregido
+          description: Estado de la resolucion. Las opciones son fail y pass nc para no corregido
           example: 'nc'
   
     infoExamToCorrect:
