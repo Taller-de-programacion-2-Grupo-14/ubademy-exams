@@ -20,7 +20,6 @@ class ExamController:
 
     def handle_get_exams(self, course_id, user_id, filters):
         exams = self.service.get_exams(course_id, user_id, filters)
-        print(f"get self bla bla bla es: {self._get_list_response(exams)}")
         return self._get_list_response(exams)
 
     def handle_get_resolutions(self, course_id, user_id, status):
@@ -47,8 +46,4 @@ class ExamController:
         return {"message": array, "status": self._get_list_status(array)}
 
     def _get_list_status(self, array):
-        if len(array):
-            print(f"{array} Voy a devolver un 200")
-        else:
-            print(f"{array} Voy a devolver un 204")
         return status.HTTP_200_OK if len(array) else status.HTTP_204_NO_CONTENT
