@@ -32,7 +32,7 @@ class ExamController:
 
     def handle_grade_resolution(self, course_id, grade_resolution_data):
         self.service.grade_resolution(course_id, grade_resolution_data)
-        return {"message": "Exam created successfully", "status": status.HTTP_200_OK}
+        return {"message": "Resolution graded successfully", "status": status.HTTP_200_OK}
 
     def handle_get_exam(self, course_id, exam_name, user_id):
         exam = self.service.get_exam(course_id, exam_name, user_id)
