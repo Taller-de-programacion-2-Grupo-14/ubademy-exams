@@ -96,7 +96,7 @@ paths:
       parameters:
         - in: query
           name: name
-          description: 'Nombre del examen para filtrar'
+          description: Nombre del examen para filtrar
           example: 'Examen de plantitas'
         - in: query
           name: status
@@ -132,6 +132,10 @@ paths:
         - Exam
       description: Obtengo una lista con todas las resoluciones del curso, a corregir en caso de ser creador o colaborador, propias en caso de ser alumno
       parameters:
+        - in: query
+          name: status
+          description: Estado para filtrar resoluciones UNICOS ESTADOS VALIDOS SON NC FAIL O PASS PARA NO CORREGIDO APROBADO Y DESAPROBADO RESPECTIVAMENTE
+          example: 'fail'
         - in: path
           required: true
           name: course_id
@@ -361,7 +365,7 @@ components:
           examlpe: ""
         status:
           type: string
-          description: Estado de la resolucion. Las opciones son passed, failed y nc para no corregido
+          description: Estado de la resolucion. Las opciones son fail y pass nc para no corregido
           example: 'nc'
   
     infoExamToCorrect:
@@ -411,8 +415,8 @@ components:
           example: 'El examen en temrinos generales, esta bastante bien, se podria haber desarrollado un poco mas en la ultima pregunta'
         status:
           type: string
-          description: estado del examen, las opciones son failed o passed
-          example: 'failed'   
+          description: estado del examen, las opciones son aprobado o desaprobado
+          example: 'aprobado'   
 
     toDoExamsInfo:
       type: object

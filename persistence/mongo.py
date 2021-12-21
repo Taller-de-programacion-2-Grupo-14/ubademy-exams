@@ -64,10 +64,12 @@ class MongoDB:
         key = _get_key_resolution(name, user_id, course_id)
         return self.db.responses.find_one(key, {"_id": 0})
 
-    def get_responses(self, name, user_id, course_id, grader):
+    def get_responses(self, name, user_id, course_id, grader, status):
         key = _get_key_resolution(name=name, user_id="", course_id=course_id)
         if not grader:
             key.update({"user": user_id})
+        elif status:
+            key.update({"status": status})
         return list(self.db.responses.find(key, {"_id": 0}))
 
     def grade_exam(self, name, user_id, course_id, corrections, status):

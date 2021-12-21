@@ -3,6 +3,8 @@ from fastapi import FastAPI, Request, status, Depends
 from fastapi.encoders import jsonable_encoder
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+import pymongo
+import os
 
 import persistence.mongo
 from controllers.Exam import ExamController
@@ -17,13 +19,10 @@ from schemas.Schemas import (
     GetResolution,
 )
 from service.Exam import ExamService
-from queryparams.query_params import ExamQueryParams
+from queryparams.query_params import ExamQueryParams, ResolutionQueryParams
 
 
 def get_client():
-    import pymongo
-    import os
-
     env = os.getenv("ENVIROMENT")
     env = env if env else "test"
     url = f"mongodb+srv://ubademy:{os.getenv('UBADEMY_PASSWORD')}@cluster0"
@@ -62,8 +61,14 @@ def get_exams(
 
 
 @app.get("/resolutions/{course_id}")
-def get_resolutions(course_id: int, user: UserSchema):
-    return exam_controller.handle_get_resolutions(course_id, user.user_id)
+def get_resolutions(
+    course_id: int,
+    user: UserSchema,
+    filter: ResolutionQueryParams = Depends(ResolutionQueryParams),
+):
+    return exam_controller.handle_get_resolutions(
+        course_id, user.user_id, filter.get_status()
+    )
 
 
 @app.get("/resolution/{course_id}/{student_id}")
