@@ -133,6 +133,8 @@ class TestGetExams(unittest.TestCase):
         with self.assertRaises(InvalidUserAction):
             service.get_exams(0, 0, {})
 
+
+class TestGetResolutions(unittest.TestCase):
     @patch("service.Exam.ExamService._check_published_exam_existance")
     def test_get_resolutions_not_being_on_the_course(self, check_existance_mock):
         check_existance_mock.return_value = None
@@ -143,8 +145,6 @@ class TestGetExams(unittest.TestCase):
         with self.assertRaises(InvalidUserAction):
             service.get_resolutions(0, 0, None)
 
-
-class TestGetResolutions(unittest.TestCase):
     @patch("service.Exam.ExamService._check_published_exam_existance")
     def test_get_resolution_of_nonexistent_exam(self, check_existance_mock):
         check_existance_mock.side_effect = ExamDoesNotExist
@@ -241,6 +241,20 @@ class TestGetExam(unittest.TestCase):
         service = ExamService(Mock(), mock_validator)
         with self.assertRaises(InvalidUserAction):
             service.get_exam(0, "", 8)
+
+    def test_get_exam_being_student(self):
+        mock_validator = Mock(spec=ExamValidator)
+        attrs = {
+            "is_student.return_value": True,
+            "is_course_creator.return_value": False,
+        }
+        mock_validator.configure_mock(**attrs)
+        mock_db = Mock(spec=MongoDB)
+        attrs_db = {"get_exam.return_value": ["hola"]}
+        mock_db.configure_mock(**attrs_db)
+        service = ExamService(mock_db, mock_validator)
+        result = service.get_exam(5, "", 4)
+        self.assertEqual(["hola"], result)
 
 
 class TestCompleteExam(unittest.TestCase):
