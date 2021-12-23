@@ -11,27 +11,24 @@ from persistence.mongo import MongoDB
 
 
 class ExamService:
-    def __init__(self, database: MongoDB):
+    def __init__(self, database: MongoDB, validator: ExamValidator):
         self.db = database
-        self.validator = ExamValidator(database)
+        self.validator = validator
 
     def create_exam(self, create_exam_info):
         user_id = create_exam_info.get("user_id")
         course_id = create_exam_info.get("id_course")
         if not self.validator.is_course_creator(course_id, user_id):
             raise IsNotTheCourseCreator
-        exams = len(self.db.get_exams(course_id, False))
-        if self.validator.exams_limit_reached(exams, course_id, user_id):
-            raise ExamsLimitReached
         name = create_exam_info.get("name")
         questions = create_exam_info.get("questions")
         self.db.create_exam(name, course_id, questions)
 
     def edit_exam(self, edit_exam_data):
         course_id = edit_exam_data.get("id_course")
-        user_id = edit_exam_data.get("user_id")
         name = edit_exam_data.get("name")
         self._check_draft_exam_existance(course_id, name)
+        user_id = edit_exam_data.get("user_id")
         if not self.validator.is_course_creator(course_id, user_id):
             raise IsNotTheCourseCreator
         questions = edit_exam_data.get("questions")

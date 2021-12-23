@@ -19,6 +19,7 @@ from schemas.Schemas import (
     GetResolution,
 )
 from service.Exam import ExamService
+from validator.ExamValidator import ExamValidator
 from queryparams.query_params import ExamQueryParams, ResolutionQueryParams
 
 
@@ -34,7 +35,7 @@ def get_client():
 
 db = persistence.mongo.MongoDB(get_client())
 app = FastAPI()
-exam_service = ExamService(db)
+exam_service = ExamService(db, ExamValidator(db))
 exam_controller = ExamController(exam_service)
 
 
