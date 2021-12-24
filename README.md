@@ -36,7 +36,6 @@ Los tests se corren en codecov por lo que de tener acceso se pueden ver los resu
 ```console
 $ pytest
 ```
-- `DATABASE_URL`: Requerido. URL de la base de datos, en formato `esquema://usuario:clave@host:puerto/nombre_db`
 ## Variables de entorno necesarias para un uso completo:
 - `COURSES_HOSTNAME`: URL de donde se va a interactuar con la api de cursos
 - `UBADEMY_PASSWORD`: Contraseña para poder conectarse a la base de datos Mongo.
