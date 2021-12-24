@@ -30,7 +30,7 @@ y luego
 ```console
 $ make runDC
 ```
-Para levantar la aplicacion, la cual se encontrará corriendo en ttp://127.0.0.1:8080
+Para levantar la aplicacion, la cual se encontrará corriendo en http://127.0.0.1:8080
 ## Tests
 Los tests se corren en codecov por lo que de tener acceso se pueden ver los resultados ahi. En caso de querer correrlos de forma local, una vez levantado el virtual environment basta con ejecutar:
 ```console
