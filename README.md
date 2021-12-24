@@ -22,7 +22,7 @@ $ hypercorn main:app --reload
 ```
 De esta forma, la aplicacion estará corriendo en http://127.0.0.1:8000
 ### Con Docker
-Para el despliegue productivo de la aplicación se provee un archivo `Dockerfile`. El mismo permitirá construir una imagen productiva de Docker del servidor de aplicación. Para construit la imagen, se utiliza el archivo MakeFile. Para compilar la imagen primero es necesario correr:
+Para el despliegue productivo de la aplicación se provee un archivo `Dockerfile`. El mismo permitirá construir una imagen productiva de Docker del servidor de la aplicación. Para construir la imagen, se utiliza el archivo MakeFile. Para compilar la imagen primero es necesario correr:
 ```console
 $ make buildDC
 ```
