@@ -7,14 +7,14 @@ STATUS_TYPES = {"desaprobado": "fail", "aprobado": "pass"}
 
 class CreateExamSchema(BaseModel):
     id_course: int
-    name: str = Field(min_length=10, max_length=255)
+    name: str = Field(min_length=3, max_length=255)
     questions: List[str] = []
     user_id: int
 
 
 class EditExamSchema(BaseModel):
     id_course: int
-    name: str = Field(min_length=10, max_length=255)
+    name: str = Field(min_length=3, max_length=255)
     questions: List[str] = []
     user_id: int
 
